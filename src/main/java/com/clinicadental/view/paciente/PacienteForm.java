@@ -17,71 +17,81 @@ public class PacienteForm extends JFrame {
     private JButton retrocederButton;
     private JPanel mainPanel;
 
+    // Asteriscos rojos para los campos validados
+    private JLabel dniAsterisk;
+    private JLabel telefonoAsterisk;
+    private JLabel emailAsterisk;
+
     public PacienteForm() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout(10, 10));  // Usar BorderLayout para organizar mejor los elementos
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Añadir padding
+        mainPanel.setLayout(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Panel para el formulario con GridLayout
-        JPanel formPanel = new JPanel(new GridLayout(7, 2, 10, 10));  // 7 filas para los campos
+        JPanel formPanel = new JPanel(new GridLayout(7, 3, 10, 10));  // Ajustar para 3 columnas (Campo, Entrada, Asterisco)
         formPanel.setBorder(BorderFactory.createTitledBorder("Registrar Paciente"));
 
-        // Campos del formulario
+        // Añadir etiquetas y campos de texto
         formPanel.add(new JLabel("Nombre:"));
         nombreField = new JTextField(20);
         formPanel.add(nombreField);
+        formPanel.add(new JLabel());  // No hay asterisco para este campo
 
         formPanel.add(new JLabel("Apellidos:"));
         apellidosField = new JTextField(20);
         formPanel.add(apellidosField);
+        formPanel.add(new JLabel());  // No hay asterisco para este campo
 
         formPanel.add(new JLabel("DNI:"));
         dniField = new JTextField(20);
         formPanel.add(dniField);
+        dniAsterisk = new JLabel("*");  // Asterisco rojo
+        dniAsterisk.setForeground(Color.BLACK);  // Color por defecto (negro o invisible)
+        formPanel.add(dniAsterisk);
 
         formPanel.add(new JLabel("Teléfono:"));
         telefonoField = new JTextField(20);
         formPanel.add(telefonoField);
+        telefonoAsterisk = new JLabel("*");
+        telefonoAsterisk.setForeground(Color.BLACK);
+        formPanel.add(telefonoAsterisk);
 
         formPanel.add(new JLabel("Dirección:"));
         direccionField = new JTextField(20);
         formPanel.add(direccionField);
+        formPanel.add(new JLabel());  // No hay asterisco para este campo
 
         formPanel.add(new JLabel("Código Postal:"));
         codPostalField = new JTextField(20);
         formPanel.add(codPostalField);
+        formPanel.add(new JLabel());  // No hay asterisco para este campo
 
         formPanel.add(new JLabel("Email:"));
         emailField = new JTextField(20);
         formPanel.add(emailField);
+        emailAsterisk = new JLabel("*");
+        emailAsterisk.setForeground(Color.BLACK);
+        formPanel.add(emailAsterisk);
 
-        // Panel para los botones
         JPanel buttonPanel = new JPanel();
         guardarButton = new JButton("Guardar");
         limpiarButton = new JButton("Limpiar");
         retrocederButton = new JButton("Retroceder");
 
-        guardarButton.setPreferredSize(new Dimension(120, 30));  // Tamaño del botón
-        limpiarButton.setPreferredSize(new Dimension(120, 30));
-        retrocederButton.setPreferredSize(new Dimension(120, 30));
-
         buttonPanel.add(guardarButton);
         buttonPanel.add(limpiarButton);
         buttonPanel.add(retrocederButton);
 
-        // Añadir paneles al mainPanel
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Configuración de la ventana
         setContentPane(mainPanel);
         setTitle("Registrar Paciente");
-        setSize(500, 400);  // Tamaño ajustado
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);  // Centrar la ventana
+        setSize(500, 400);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
     }
 
-    // Getters para acceder a los campos desde el controlador
+    // Métodos para acceder a los campos desde el controlador
     public JTextField getNombreField() {
         return nombreField;
     }
@@ -110,6 +120,18 @@ public class PacienteForm extends JFrame {
         return emailField;
     }
 
+    public JLabel getDniAsterisk() {
+        return dniAsterisk;
+    }
+
+    public JLabel getTelefonoAsterisk() {
+        return telefonoAsterisk;
+    }
+
+    public JLabel getEmailAsterisk() {
+        return emailAsterisk;
+    }
+
     // Métodos para agregar los listeners de los botones
     public void addGuardarButtonListener(ActionListener listener) {
         guardarButton.addActionListener(listener);
@@ -121,11 +143,6 @@ public class PacienteForm extends JFrame {
 
     public void addRetrocederButtonListener(ActionListener listener) {
         retrocederButton.addActionListener(listener);
-    }
-
-    // Método para mostrar un mensaje en la ventana
-    public void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje);
     }
 
     // Método para limpiar los campos del formulario

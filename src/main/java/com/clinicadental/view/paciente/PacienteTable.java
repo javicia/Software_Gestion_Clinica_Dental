@@ -1,10 +1,17 @@
 package com.clinicadental.view.paciente;
 
+import com.clinicadental.controller.paciente.PacienteAddEditController;
+import com.clinicadental.service.IPacienteService;
+import com.clinicadental.service.impl.PacienteServiceImpl;
+import com.clinicadental.view.init.MainScreen;
 import com.clinicadental.model.Entity.Paciente;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -12,11 +19,26 @@ import java.util.List;
 public class PacienteTable extends JFrame {
     private JTable pacienteTable;
     private JButton backButton;
+    private JButton addButton; // Botón para añadir pacientes
     private JPanel mainPanel;
+    private IPacienteService pacienteService;
 
     public PacienteTable() {
+        this.pacienteService = new PacienteServiceImpl();
+
         // Configuración de la ventana principal
         mainPanel = new JPanel(new BorderLayout());
+
+        // Crear un panel con título para la tabla
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "Listado de Pacientes",
+                TitledBorder.CENTER,
+                TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 18),
+                Color.BLACK
+        ));
 
         // Crear la tabla con colores y fuente personalizada
         pacienteTable = new JTable() {
@@ -34,17 +56,32 @@ public class PacienteTable extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(pacienteTable);
 
+        // Añadir la tabla con scroll al panel con título
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
         // Botón para volver
         backButton = new JButton("Volver");
 
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(backButton, BorderLayout.SOUTH);
+        // Botón para añadir nuevo paciente
+        addButton = new JButton("Añadir Paciente");
+
+        // Panel de botones (volver y añadir)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(addButton);
+        buttonPanel.add(backButton);
+
+        // Añadir el panel de la tabla y los botones al mainPanel
+        mainPanel.add(tablePanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
-        setTitle("Lista de Pacientes");
-        setSize(800, 400);
-        setLocationRelativeTo(null);  // Centrar la ventana
+        setTitle("Gestión de Pacientes");
+        setSize(800, 600);  // Establecer el mismo tamaño que MainScreen
+        setLocationRelativeTo(null);  // Centrar la ventana en la pantalla
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Cargar pacientes en la tabla
+        cargarPacientesEnTabla();
 
         // Evento para abrir detalles del paciente al hacer doble clic en una fila
         pacienteTable.addMouseListener(new MouseAdapter() {
@@ -58,6 +95,28 @@ public class PacienteTable extends JFrame {
                 }
             }
         });
+
+        // Acción del botón "Volver" para regresar a MainScreen
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                volverAMainScreen();
+            }
+        });
+
+        // Acción del botón "Añadir Paciente" para abrir la ventana PacienteForm
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirPacienteForm();
+            }
+        });
+    }
+
+    // Método para cargar los pacientes en la tabla
+    public void cargarPacientesEnTabla() {
+        List<Paciente> pacientes = pacienteService.obtenerTodos();
+        setPacientesData(pacientes);
     }
 
     // Método para llenar la tabla con la lista de pacientes (sin el ID)
@@ -86,7 +145,14 @@ public class PacienteTable extends JFrame {
         pacienteTable.setModel(model);
     }
 
-    // Método para abrir la ventana con los detalles del paciente seleccionado
+    // Método para abrir la pantalla de añadir paciente (PacienteForm)
+    private void abrirPacienteForm() {
+        PacienteForm pacienteForm = new PacienteForm();
+        new PacienteAddEditController(pacienteForm, this); // Pasar referencia de PacienteTable
+        pacienteForm.setVisible(true);
+    }
+
+    // Método para abrir detalles del paciente seleccionado
     private void abrirDetallesPaciente(int rowIndex) {
         // Obtener los datos de la fila seleccionada, manejando valores null
         String nombre = pacienteTable.getValueAt(rowIndex, 0) != null ? pacienteTable.getValueAt(rowIndex, 0).toString() : "N/A";
@@ -100,6 +166,15 @@ public class PacienteTable extends JFrame {
         // Abrir la ventana de detalles
         PacienteDetailsDialog detallesDialog = new PacienteDetailsDialog(this, nombre, apellidos, dni, telefono, direccion, codPostal, email);
         detallesDialog.setVisible(true);
+    }
+
+    // Método para regresar a MainScreen
+    private void volverAMainScreen() {
+        // Cerrar la ventana actual
+        dispose();
+        // Abrir la pantalla principal MainScreen
+        MainScreen mainScreen = new MainScreen();
+        mainScreen.setVisible(true);
     }
 
     public JTable getPacienteTable() {

@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class PacienteDetailsDialog extends JDialog {
+public class PacienteDetailsDialog extends JFrame {
     private JPanel contentPane;
     private JLabel nombreLabel;
     private JLabel apellidosLabel;
@@ -18,9 +18,13 @@ public class PacienteDetailsDialog extends JDialog {
     private JButton deleteButton;
 
     public PacienteDetailsDialog(JFrame parent, String nombre, String apellidos, String dni, String telefono, String direccion, String codPostal, String email) {
-        super(parent, "Detalles del Paciente", true);
+        super("Detalles del Paciente");
 
-        contentPane = new JPanel(new GridLayout(9, 2));  // Cambiado a 9 filas para agregar el botón "Cancelar"
+        // Configurar el tamaño del JFrame para que coincida con MainScreen
+        setSize(800, 600);
+        setLocationRelativeTo(parent);  // Centrar la ventana en la pantalla
+
+        contentPane = new JPanel(new GridLayout(9, 2));  // Usar GridLayout para organizar los elementos
 
         // Inicializar etiquetas con los valores
         nombreLabel = new JLabel(nombre);
@@ -58,14 +62,9 @@ public class PacienteDetailsDialog extends JDialog {
         contentPane.add(deleteButton);
 
         setContentPane(contentPane);  // Establecer el panel como el contenido de la ventana
-        setSize(400, 300);
-        setLocationRelativeTo(parent);  // Centrar la ventana
 
         // Acción para cerrar la ventana al presionar "OK"
         buttonOK.addActionListener(e -> dispose());
-
-        // Agregar un println en el botón eliminar para verificar
-        deleteButton.addActionListener(e -> System.out.println("Botón 'Eliminar' fue presionado"));
     }
 
     // Métodos para agregar listeners a los botones
@@ -77,7 +76,7 @@ public class PacienteDetailsDialog extends JDialog {
         deleteButton.addActionListener(listener);
     }
 
-
+    // Método para cerrar el JFrame
     public void cerrarDialogo() {
         this.dispose();
     }
