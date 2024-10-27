@@ -1,30 +1,33 @@
-package com.clinicadental.controller.paciente;
+package com.clinicadental.controller.doctor;
 
 import com.clinicadental.model.Entity.Paciente;
+import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.IPacienteService;
+import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.service.impl.PacienteServiceImpl;
-import com.clinicadental.view.paciente.PacienteDetails;
+import com.clinicadental.view.doctor.GestionDoctor;
 import com.clinicadental.view.paciente.GestionPaciente;
+import com.clinicadental.view.paciente.PacienteDetails;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PacienteDetailsController {
-    private IPacienteService pacienteService;
-    private GestionPaciente pacienteTable;
+public class DoctorDetailsController {
+    private IDoctorService doctorService;
+    private GestionDoctor doctorTable;
 
-    public PacienteDetailsController(GestionPaciente pacienteTableView) {
-        this.pacienteTable = pacienteTableView;
-        this.pacienteService = new PacienteServiceImpl();
+    public DoctorDetailsController(GestionDoctor doctorTableView) {
+        this.doctorTable = doctorTableView;
+        this.doctorService = new DoctorServiceImpl();
 
-        this.pacienteTable.getPacienteTable().addMouseListener(new java.awt.event.MouseAdapter() {
+        this.doctorTable.getDoctorTable().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (e.getClickCount() == 2) { // Detectar doble clic
-                    int selectedRow = pacienteTable.getPacienteTable().getSelectedRow();
+                    int selectedRow = doctorTable.getDoctorTable().getSelectedRow();
                     if (selectedRow != -1) {
-                        mostrarDetallesPaciente(selectedRow);
+                        mostrarDetallesDoctor(selectedRow);
                     }
                 }
             }
@@ -32,7 +35,7 @@ public class PacienteDetailsController {
     }
 
     // Método para mostrar los detalles del paciente seleccionado
-    private void mostrarDetallesPaciente(int selectedRow) {
+    private void mostrarDetallesDoctor(int selectedRow) {
         Paciente paciente = obtenerPacienteDesdeTabla(selectedRow);
         if (paciente != null) {
             PacienteDetails detailsDialog = new PacienteDetails(

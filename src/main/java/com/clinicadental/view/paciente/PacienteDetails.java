@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class PacienteDetailsDialog extends JFrame {
+public class PacienteDetails extends JFrame {
     private JPanel contentPane;
     private JLabel nombreLabel;
     private JLabel apellidosLabel;
@@ -17,7 +17,7 @@ public class PacienteDetailsDialog extends JFrame {
     private JButton editButton;
     private JButton deleteButton;
 
-    public PacienteDetailsDialog(JFrame parent, String nombre, String apellidos, String dni, String telefono, String direccion, String codPostal, String email) {
+    public PacienteDetails(JFrame parent, String nombre, String apellidos, String dni, String telefono, String direccion, String codPostal, String email) {
         super("Detalles del Paciente");
 
         // Configurar el tamaño del JFrame para que coincida con MainScreen

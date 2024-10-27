@@ -1,7 +1,7 @@
 package com.clinicadental.view.init;
 
-import com.clinicadental.view.paciente.PacienteTable;
-import com.clinicadental.controller.paciente.PacienteTableController;
+import com.clinicadental.view.paciente.GestionPaciente;
+import com.clinicadental.controller.paciente.GestionPacienteController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,8 +96,8 @@ public class MainScreen extends JFrame {
 
     // Método para abrir la vista de la tabla de pacientes
     private void abrirPacienteTable() {
-        PacienteTable pacienteTableView = new PacienteTable();
-        new PacienteTableController(pacienteTableView);  // Controlador para gestionar la vista
+        GestionPaciente pacienteTableView = new GestionPaciente();
+        new GestionPacienteController(pacienteTableView);  // Controlador para gestionar la vista
         pacienteTableView.setVisible(true);  // Mostrar la ventana de PacienteTable
     }
 

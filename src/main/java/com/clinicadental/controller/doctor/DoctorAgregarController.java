@@ -1,47 +1,52 @@
-package com.clinicadental.controller.paciente;
+package com.clinicadental.controller.doctor;
 
+import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.model.Entity.Paciente;
+import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.IPacienteService;
+import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.service.impl.PacienteServiceImpl;
-import com.clinicadental.view.paciente.PacienteForm;
-import com.clinicadental.view.paciente.PacienteTable;
+import com.clinicadental.view.doctor.GestionDoctor;
+import com.clinicadental.view.paciente.GestionPaciente;
+import com.clinicadental.view.paciente.PacienteAgregar;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class PacienteAddEditController {
-    private IPacienteService pacienteService;
-    private PacienteForm pacienteForm;
-    private PacienteTable pacienteTable;
+public class DoctorAgregarController {
+    private IDoctorService doctorService;
+    private DoctorAgregar doctorForm;
+    private GestionDoctor doctorTable;
 
-    public PacienteAddEditController(PacienteForm pacienteForm, PacienteTable pacienteTable) {
-        this.pacienteForm = pacienteForm;
-        this.pacienteTable = pacienteTable;
-        this.pacienteService = new PacienteServiceImpl();
+    public DoctorAgregarController(DoctorAgregar doctorForm, GestionDoctor doctorTable) {
+        this.doctorForm = doctorForm;
+        this.doctorTable = doctorTable;
+        this.doctorService = new DoctorServiceImpl();
 
         // Configurar los eventos de los botones en el controlador
-        this.pacienteForm.addGuardarButtonListener(new GuardarPacienteListener());
-        this.pacienteForm.addLimpiarButtonListener(new LimpiarCamposListener());
-        this.pacienteForm.addRetrocederButtonListener(new RetrocederListener());
+        this.doctorForm.addGuardarButtonListener(new GuardarDoctorListener());
+        this.doctorForm.addLimpiarButtonListener(new LimpiarCamposListener());
+        this.doctorForm.addRetrocederButtonListener(new RetrocederListener());
     }
 
     // Listener para el botón Guardar
-    class GuardarPacienteListener implements ActionListener {
+    class GuardarDoctorListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             // Obtener los datos del formulario
-            String nombre = pacienteForm.getNombreField().getText();
-            String apellidos = pacienteForm.getApellidosField().getText();
-            String dni = pacienteForm.getDniField().getText();
-            String telefono = pacienteForm.getTelefonoField().getText();
-            String direccion = pacienteForm.getDireccionField().getText();
-            String codPostal = pacienteForm.getCodPostalField().getText();
-            String email = pacienteForm.getEmailField().getText();
+            String nombre = doctorForm.getNombreField().getText();
+            String apellidos = doctorForm.getApellidosField().getText();
+            String dni = doctorForm.getDniField().getText();
+            String telefono = doctorForm.getTelefonoField().getText();
+            String direccion = doctorForm.getDireccionField().getText();
+            String codPostal = doctorForm.getCodPostalField().getText();
+            String email = doctorForm.getEmailField().getText();
+            String numColegiado = doctorForm.getNumColegiado().getText();
 
             // Restablecer estilos por defecto
             resetFieldStyles();
@@ -51,52 +56,53 @@ public class PacienteAddEditController {
 
             // Validar DNI (8 dígitos + letra)
             if (!validarDNI(dni)) {
-                marcarCampoInvalido(pacienteForm.getDniField(), pacienteForm.getDniAsterisk());
+                marcarCampoInvalido(doctorForm.getDniField(), doctorForm.getDniAsterisk());
                 isValid = false;
             }
 
             // Validar teléfono (solo dígitos, longitud entre 9-12)
             if (!validarTelefono(telefono)) {
-                marcarCampoInvalido(pacienteForm.getTelefonoField(), pacienteForm.getTelefonoAsterisk());
+                marcarCampoInvalido(doctorForm.getTelefonoField(), doctorForm.getTelefonoAsterisk());
                 isValid = false;
             }
 
             // Validar email (formato estándar de correo electrónico)
             if (!validarEmail(email)) {
-                marcarCampoInvalido(pacienteForm.getEmailField(), pacienteForm.getEmailAsterisk());
+                marcarCampoInvalido(doctorForm.getEmailField(), doctorForm.getEmailAsterisk());
                 isValid = false;
             }
 
             // Si algún campo es inválido, mostrar una alerta
             if (!isValid) {
-                JOptionPane.showMessageDialog(pacienteForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(doctorForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Crear un nuevo objeto Paciente si los datos son válidos
-            Paciente paciente = new Paciente();
-            paciente.setNombre(nombre);
-            paciente.setApellidos(apellidos);
-            paciente.setDni(dni);
-            paciente.setTelefono(telefono);
-            paciente.setDireccion(direccion);
-            paciente.setCodPostal(Integer.parseInt(codPostal));
-            paciente.setEmail(email);
+            Doctor doctor = new Doctor();
+            doctor.setNombre(nombre);
+            doctor.setApellidos(apellidos);
+            doctor.setDni(dni);
+            doctor.setTelefono(telefono);
+            doctor.setDireccion(direccion);
+            doctor.setCodPostal(Integer.parseInt(codPostal));
+            doctor.setEmail(email);
+            doctor.getNumColegiado(numColegiado);
 
             // Guardar el paciente usando el servicio
-            pacienteService.savePaciente(paciente);
+            doctorService.saveDoctor(doctor);
 
             // Mostrar mensaje de confirmación
-            JOptionPane.showMessageDialog(pacienteForm, "Paciente guardado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(doctorForm, "Doctor guardado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             // Limpiar los campos del formulario después de guardar
-            pacienteForm.limpiarCampos();
+            doctorForm.limpiarCampos();
 
             // Actualizar la tabla de pacientes
-            pacienteTable.setPacientesData(pacienteService.obtenerTodos());
+            doctorTable.setDoctoresData(doctorService.getAllDoctor());
 
             // Cerrar el formulario
-            pacienteForm.dispose();
+            doctorForm.dispose();
         }
     }
 
@@ -132,9 +138,9 @@ public class PacienteAddEditController {
 
     // Restablecer el estilo de todos los campos
     private void resetFieldStyles() {
-        resetFieldStyle(pacienteForm.getDniField(), pacienteForm.getDniAsterisk());
-        resetFieldStyle(pacienteForm.getTelefonoField(), pacienteForm.getTelefonoAsterisk());
-        resetFieldStyle(pacienteForm.getEmailField(), pacienteForm.getEmailAsterisk());
+        resetFieldStyle(doctorForm.getDniField(), doctorForm.getDniAsterisk());
+        resetFieldStyle(doctorForm.getTelefonoField(), doctorForm.getTelefonoAsterisk());
+        resetFieldStyle(doctorForm.getEmailField(), doctorForm.getEmailAsterisk());
     }
 
     // Método para restablecer el estilo del campo (borde por defecto y quitar asterisco rojo)
@@ -147,7 +153,7 @@ public class PacienteAddEditController {
     class LimpiarCamposListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            pacienteForm.limpiarCampos();  // Llama al método de limpiar los campos
+            doctorForm.limpiarCampos();  // Llama al método de limpiar los campos
         }
     }
 
@@ -155,7 +161,7 @@ public class PacienteAddEditController {
     class RetrocederListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            pacienteForm.dispose();  // Cerrar la ventana actual
+            doctorForm.dispose();  // Cerrar la ventana actual
         }
     }
 }

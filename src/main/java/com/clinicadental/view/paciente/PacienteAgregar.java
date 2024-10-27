@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class PacienteForm extends JFrame {
+public class PacienteAgregar extends JFrame {
     private JTextField nombreField;
     private JTextField apellidosField;
     private JTextField dniField;
@@ -22,7 +22,7 @@ public class PacienteForm extends JFrame {
     private JLabel telefonoAsterisk;
     private JLabel emailAsterisk;
 
-    public PacienteForm() {
+    public PacienteAgregar() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
