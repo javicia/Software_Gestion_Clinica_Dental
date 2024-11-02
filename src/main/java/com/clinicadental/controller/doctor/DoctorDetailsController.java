@@ -1,13 +1,10 @@
 package com.clinicadental.controller.doctor;
 
-import com.clinicadental.model.Entity.Paciente;
+import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.service.IDoctorService;
-import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
-import com.clinicadental.service.impl.PacienteServiceImpl;
+import com.clinicadental.view.doctor.DoctorDetails;
 import com.clinicadental.view.doctor.GestionDoctor;
-import com.clinicadental.view.paciente.GestionPaciente;
-import com.clinicadental.view.paciente.PacienteDetails;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -36,17 +33,18 @@ public class DoctorDetailsController {
 
     // Método para mostrar los detalles del paciente seleccionado
     private void mostrarDetallesDoctor(int selectedRow) {
-        Paciente paciente = obtenerPacienteDesdeTabla(selectedRow);
-        if (paciente != null) {
-            PacienteDetails detailsDialog = new PacienteDetails(
-                    pacienteTable,
-                    paciente.getNombre(),
-                    paciente.getApellidos(),
-                    paciente.getDni(),
-                    paciente.getTelefono(),
-                    paciente.getDireccion(),
-                    paciente.getCodPostal().toString(),
-                    paciente.getEmail()
+        Doctor doctor = obtenerDoctorDesdeTabla(selectedRow);
+        if (doctor != null) {
+            DoctorDetails detailsDialog = new DoctorDetails(
+                    doctorTable,
+                    doctor.getNombre(),
+                    doctor.getApellidos(),
+                    doctor.getDni(),
+                    doctor.getTelefono(),
+                    doctor.getDireccion(),
+                    doctor.getCodPostal().toString(),
+                    doctor.getEmail(),
+                    doctor.getNumColegiado()
             );
 
             // Listener para el botón "Eliminar"
@@ -54,7 +52,7 @@ public class DoctorDetailsController {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("Botón 'Eliminar' fue presionado en el diálogo");
-                    mostrarConfirmDialog(paciente, detailsDialog);
+                    mostrarConfirmDialog(doctor, detailsDialog);
                 }
             });
 
@@ -65,7 +63,7 @@ public class DoctorDetailsController {
     }
 
     // Mostrar el cuadro de diálogo de confirmación
-    private void mostrarConfirmDialog(Paciente paciente, PacienteDetails detailsDialog) {
+    private void mostrarConfirmDialog(Doctor doctor, DoctorDetails detailsDialog) {
         System.out.println("Intentando mostrar el JOptionPane de confirmación");
 
         // Mostrar el cuadro de diálogo de confirmación
@@ -81,32 +79,32 @@ public class DoctorDetailsController {
 
         // Si el usuario confirma (opción "Sí")
         if (confirm == JOptionPane.YES_OPTION) {
-            eliminarPaciente(paciente, detailsDialog);
+            eliminarDoctor(doctor, detailsDialog);
         } else {
             System.out.println("Eliminación cancelada por el usuario.");
         }
     }
 
     // Método para eliminar el paciente de la base de datos y actualizar la tabla
-    private void eliminarPaciente(Paciente paciente, PacienteDetails detailsDialog) {
-        System.out.println("Eliminando paciente: " + paciente.getDni());
+    private void eliminarDoctor(Doctor doctor, DoctorDetails detailsDialog) {
+        System.out.println("Eliminando paciente: " + doctor.getDni());
 
         // Eliminar paciente de la base de datos
-        pacienteService.deletePaciente(paciente);
+        doctorService.deleteDoctor(doctor);
 
         // Actualizar la tabla con los pacientes restantes
-        pacienteTable.setPacientesData(pacienteService.obtenerTodos());
+        doctorTable.setDoctoresData(doctorService.getAllDoctor());
 
         // Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(null, "Paciente eliminado exitosamente.");
+        JOptionPane.showMessageDialog(null, "Doctor eliminado exitosamente.");
 
         // Cerrar el diálogo de detalles
         detailsDialog.cerrarDialogo();
     }
 
-    private Paciente obtenerPacienteDesdeTabla(int rowIndex) {
-        String dni = (String) pacienteTable.getPacienteTable().getValueAt(rowIndex, 2);
-        return pacienteService.obtenerTodos().stream()
+    private Doctor obtenerDoctorDesdeTabla(int rowIndex) {
+        String dni = (String) doctorTable.getDoctorTable().getValueAt(rowIndex, 2);
+        return doctorService.getAllDoctor().stream()
                 .filter(p -> p.getDni().equals(dni))
                 .findFirst()
                 .orElse(null);

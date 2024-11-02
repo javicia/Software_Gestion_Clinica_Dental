@@ -1,13 +1,9 @@
 package com.clinicadental.controller.doctor;
 
 import com.clinicadental.model.Entity.Doctor;
-import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.IDoctorService;
-import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
-import com.clinicadental.service.impl.PacienteServiceImpl;
 import com.clinicadental.view.doctor.GestionDoctor;
-import com.clinicadental.view.paciente.GestionPaciente;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

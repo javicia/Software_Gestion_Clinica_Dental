@@ -1,14 +1,10 @@
 package com.clinicadental.controller.doctor;
 
 import com.clinicadental.model.Entity.Doctor;
-import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.IDoctorService;
-import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
-import com.clinicadental.service.impl.PacienteServiceImpl;
+import com.clinicadental.view.doctor.DoctorAgregar;
 import com.clinicadental.view.doctor.GestionDoctor;
-import com.clinicadental.view.paciente.GestionPaciente;
-import com.clinicadental.view.paciente.PacienteAgregar;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -46,7 +42,7 @@ public class DoctorAgregarController {
             String direccion = doctorForm.getDireccionField().getText();
             String codPostal = doctorForm.getCodPostalField().getText();
             String email = doctorForm.getEmailField().getText();
-            String numColegiado = doctorForm.getNumColegiado().getText();
+            String numColegiado = doctorForm.getNumColegiadoField().getText();
 
             // Restablecer estilos por defecto
             resetFieldStyles();
@@ -87,7 +83,7 @@ public class DoctorAgregarController {
             doctor.setDireccion(direccion);
             doctor.setCodPostal(Integer.parseInt(codPostal));
             doctor.setEmail(email);
-            doctor.getNumColegiado(numColegiado);
+            doctor.getNumColegiado();
 
             // Guardar el paciente usando el servicio
             doctorService.saveDoctor(doctor);

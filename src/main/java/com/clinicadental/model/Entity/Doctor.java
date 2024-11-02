@@ -49,7 +49,7 @@ public class Doctor {
     }
 
     public Integer getNumColegiado() {
-        return numColegiado;
+        return this.numColegiado;
     }
 
     public void setNumColegiado(Integer numColegiado) {

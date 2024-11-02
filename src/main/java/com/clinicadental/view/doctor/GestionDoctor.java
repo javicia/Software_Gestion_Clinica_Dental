@@ -1,9 +1,7 @@
 package com.clinicadental.view.doctor;
 
-import com.clinicadental.controller.paciente.PacienteAgregarController;
+import com.clinicadental.controller.doctor.DoctorAgregarController;
 import com.clinicadental.model.Entity.Doctor;
-import com.clinicadental.model.Entity.Paciente;
-import com.clinicadental.view.paciente.PacienteAgregar;
 import com.clinicadental.view.paciente.PacienteDetails;
 
 import javax.swing.*;
@@ -154,7 +152,7 @@ public class GestionDoctor extends JFrame {
         return filterFields;
     }
 
-    public JTable getPacienteTable() {
+    public JTable getDoctorTable() {
         return doctorTable;
     }
 
