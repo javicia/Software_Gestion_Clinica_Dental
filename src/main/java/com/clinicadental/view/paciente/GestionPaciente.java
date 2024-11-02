@@ -1,7 +1,12 @@
 package com.clinicadental.view.paciente;
 
 import com.clinicadental.controller.paciente.PacienteAgregarController;
+import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.model.Entity.Paciente;
+import com.clinicadental.service.IDoctorService;
+import com.clinicadental.service.IPacienteService;
+import com.clinicadental.service.impl.DoctorServiceImpl;
+import com.clinicadental.service.impl.PacienteServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -79,6 +84,13 @@ public class GestionPaciente extends JFrame {
 
         // Botón para volver
         backButton = new JButton("Volver");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();  // Cerrar el JFrame actual
+            }
+        });
+
 
         // Botón para añadir nuevo paciente
         addButton = new JButton("Añadir Paciente");
@@ -125,7 +137,45 @@ public class GestionPaciente extends JFrame {
 
         // Abrir la ventana de detalles
         PacienteDetails detallesDialog = new PacienteDetails(this, nombre, apellidos, dni, telefono, direccion, codPostal, email);
-        detallesDialog.setVisible(true);
+        // Agregar listener para el botón de eliminar
+        detallesDialog.addDeleteListener(e -> {
+        // Lógica para eliminar el registro de la base de datos
+        eliminarPaciente(dni); // Método que debes implementar para eliminar de la BD
+        detallesDialog.cerrarDialogo(); // Cierra el diálogo de detalles
+        actualizarTabla(); // Método que debes implementar para refrescar la tabla
+    });
+ detallesDialog.setVisible(true);
+}
+
+    // Método para eliminar el doctor de la base de datos
+    private void eliminarPaciente(String dni) {
+        // Crear una instancia del servicio de doctor
+        IPacienteService pacienteService = new PacienteServiceImpl();
+
+        // Obtener el doctor usando el número de colegiado
+        Paciente paciente = pacienteService.obtenerTodos().stream()
+                .filter(p -> p.getDni() != null && p.getDni().equals(dni))
+                .findFirst()
+                .orElse(null);
+
+        if (paciente != null) {
+            // Llamar al método del servicio para eliminar el doctor
+            pacienteService.deletePaciente(paciente);
+
+            // Actualizar la tabla después de la eliminación
+            actualizarTabla();
+            JOptionPane.showMessageDialog(this, "Paciente eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo encontrar el paciente a eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+    // Método para actualizar la tabla de doctores
+    private void actualizarTabla() {
+        IPacienteService pacienteService = new PacienteServiceImpl(); // Crear una nueva instancia del servicio
+        List<Paciente> pacientes = pacienteService.obtenerTodos(); // Obtener la lista actualizada de doctores
+        setPacientesData(pacientes); // Llamar al método para llenar la tabla
     }
 
     // Método para llenar la tabla con la lista de pacientes

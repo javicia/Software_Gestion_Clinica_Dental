@@ -4,8 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class DoctorAgregar extends JFrame {
-
+public class DoctorEditar extends JFrame {
     private JTextField nombreField;
     private JTextField apellidosField;
     private JTextField dniField;
@@ -24,13 +23,13 @@ public class DoctorAgregar extends JFrame {
     private JLabel telefonoAsterisk;
     private JLabel emailAsterisk;
 
-    public DoctorAgregar() {
+    public DoctorEditar() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel formPanel = new JPanel(new GridLayout(8, 3, 10, 10));  // Ajuste a 8 filas para incluir "NumColegiado"
-        formPanel.setBorder(BorderFactory.createTitledBorder("Registrar Doctor"));
+        formPanel.setBorder(BorderFactory.createTitledBorder("Editar Doctor"));
 
         // Añadir etiquetas y campos de texto
         formPanel.add(new JLabel("Nombre:"));
@@ -92,7 +91,7 @@ public class DoctorAgregar extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
-        setTitle("Registrar Doctor");
+        setTitle("Editar Doctor");
         setSize(500, 400);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

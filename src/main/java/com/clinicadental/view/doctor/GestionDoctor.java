@@ -1,8 +1,10 @@
 package com.clinicadental.view.doctor;
 
 import com.clinicadental.controller.doctor.DoctorAgregarController;
+import com.clinicadental.controller.doctor.DoctorEditarController;
 import com.clinicadental.model.Entity.Doctor;
-import com.clinicadental.view.paciente.PacienteDetails;
+import com.clinicadental.service.IDoctorService;
+import com.clinicadental.service.impl.DoctorServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -52,23 +54,24 @@ public class GestionDoctor extends JFrame {
         doctorTable.getTableHeader().setForeground(Color.WHITE);
         doctorTable.setSelectionBackground(new Color(204, 229, 255));
 
-        // Agregar un MouseListener para detectar doble clic y abrir detalles del paciente
+        // Agregar un MouseListener para detectar doble clic y abrir detalles del doctor
         doctorTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {  // Detectar doble clic
                     int selectedRow = doctorTable.getSelectedRow();
                     if (selectedRow != -1) {  // Si hay una fila seleccionada
-                        abrirDetallesPaciente(selectedRow);  // Llamar al método para abrir los detalles del paciente
+                        abrirDetallesDoctor(selectedRow);  // Llamar al método para abrir los detalles del doctor
                     }
                 }
             }
         });
+
         JScrollPane scrollPane = new JScrollPane(doctorTable);
 
         // Panel de filtros debajo de la cabecera
-        JPanel filterPanel = new JPanel(new GridLayout(1, 7));  // 7 columnas para los filtros
-        filterFields = new JTextField[7];
+        JPanel filterPanel = new JPanel(new GridLayout(1, 8));  // 8 columnas para los filtros
+        filterFields = new JTextField[8];
         for (int i = 0; i < filterFields.length; i++) {
             filterFields[i] = new JTextField();
             filterPanel.add(filterFields[i]);
@@ -80,8 +83,14 @@ public class GestionDoctor extends JFrame {
 
         // Botón para volver
         backButton = new JButton("Volver");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();  // Cerrar el JFrame actual
+            }
+        });
 
-        // Botón para añadir nuevo paciente
+        // Botón para añadir nuevo doctor
         addButton = new JButton("Añadir Doctor");
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -100,22 +109,21 @@ public class GestionDoctor extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
-        setTitle("Gestión de Doctor");
+        setTitle("Gestión de Doctores");
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    // Método para abrir el formulario de añadir paciente
+    // Método para abrir el formulario de añadir doctor
     private void abrirDoctorForm() {
         DoctorAgregar doctorForm = new DoctorAgregar();
-        new DoctorAgregarController(doctorForm, this); // Pasar la referencia de PacienteTable para actualizar la tabla
+        new DoctorAgregarController(doctorForm, this); // Pasar la referencia de GestionDoctor para actualizar la tabla
         doctorForm.setVisible(true);  // Asegurarse de que el formulario sea visible
     }
 
-    // Método para abrir detalles del paciente seleccionado
-    private void abrirDetallesPaciente(int rowIndex) {
-        // Obtener los datos de la fila seleccionada, manejando valores null
+    // En GestionDoctor.java, método abrirDetallesDoctor
+    private void abrirDetallesDoctor(int rowIndex) {
         String nombre = doctorTable.getValueAt(rowIndex, 0) != null ? doctorTable.getValueAt(rowIndex, 0).toString() : "N/A";
         String apellidos = doctorTable.getValueAt(rowIndex, 1) != null ? doctorTable.getValueAt(rowIndex, 1).toString() : "N/A";
         String dni = doctorTable.getValueAt(rowIndex, 2) != null ? doctorTable.getValueAt(rowIndex, 2).toString() : "N/A";
@@ -123,13 +131,107 @@ public class GestionDoctor extends JFrame {
         String direccion = doctorTable.getValueAt(rowIndex, 4) != null ? doctorTable.getValueAt(rowIndex, 4).toString() : "N/A";
         String codPostal = doctorTable.getValueAt(rowIndex, 5) != null ? doctorTable.getValueAt(rowIndex, 5).toString() : "N/A";
         String email = doctorTable.getValueAt(rowIndex, 6) != null ? doctorTable.getValueAt(rowIndex, 6).toString() : "N/A";
+        Integer numColegiado = doctorTable.getValueAt(rowIndex, 7) != null ? Integer.parseInt(doctorTable.getValueAt(rowIndex, 7).toString()) : null;
 
-        // Abrir la ventana de detalles
-        PacienteDetails detallesDialog = new PacienteDetails(this, nombre, apellidos, dni, telefono, direccion, codPostal, email);
-        detallesDialog.setVisible(true);
+        System.out.println("Número de Colegiado: " + numColegiado); // Imprime el valor para verificarlo
+
+        // Abrir la ventana de detalles del doctor
+        DoctorDetails detallesDialog = new DoctorDetails(this, nombre, apellidos, dni, telefono, direccion, codPostal, email, numColegiado);
+
+        // Agregar listener para el botón de eliminar
+        detallesDialog.addDeleteListener(e -> {
+        // Lógica para eliminar el registro de la base de datos
+        eliminarDoctor(numColegiado); // Método que debes implementar para eliminar de la BD
+        detallesDialog.cerrarDialogo(); // Cierra el diálogo de detalles
+        actualizarTabla(); // Método que debes implementar para refrescar la tabla
+    });
+
+        // Agregar listener para el botón de editar
+        detallesDialog.addEditListener(e -> {
+            editarDoctor(numColegiado); // Pasar el número de colegiado o el objeto Doctor
+            detallesDialog.cerrarDialogo(); // Cerrar el diálogo de detalles
+        });
+ detallesDialog.setVisible(true);
     }
 
-    // Método para llenar la tabla con la lista de pacientes
+    // Método para eliminar el doctor de la base de datos
+    private void eliminarDoctor(Integer numColegiado) {
+        // Crear una instancia del servicio de doctor
+        IDoctorService doctorService = new DoctorServiceImpl();
+
+        // Obtener el doctor usando el número de colegiado
+        Doctor doctor = doctorService.getAllDoctor().stream()
+                .filter(d -> d.getNumColegiado() != null && d.getNumColegiado().equals(numColegiado))
+                .findFirst()
+                .orElse(null);
+
+        if (doctor != null) {
+            // Llamar al método del servicio para eliminar el doctor
+            doctorService.deleteDoctor(doctor);
+
+            // Actualizar la tabla después de la eliminación
+            actualizarTabla(); // Llama al método para refrescar la tabla
+            JOptionPane.showMessageDialog(this, "Doctor eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo encontrar el doctor a eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void editarDoctor(Integer numColegiado) {
+        IDoctorService doctorService = new DoctorServiceImpl();
+        Doctor doctor = doctorService.getAllDoctor().stream()
+                .filter(d -> d.getNumColegiado() != null && d.getNumColegiado().equals(numColegiado))
+                .findFirst()
+                .orElse(null);
+
+        if (doctor != null) {
+            DoctorEditar editarDoctorForm = new DoctorEditar();
+            editarDoctorForm.getNombreField().setText(doctor.getNombre());
+            editarDoctorForm.getApellidosField().setText(doctor.getApellidos());
+            editarDoctorForm.getDniField().setText(doctor.getDni());
+            editarDoctorForm.getTelefonoField().setText(doctor.getTelefono());
+            editarDoctorForm.getDireccionField().setText(doctor.getDireccion());
+            editarDoctorForm.getCodPostalField().setText(String.valueOf(doctor.getCodPostal()));
+            editarDoctorForm.getEmailField().setText(doctor.getEmail());
+            editarDoctorForm.getNumColegiadoField().setText(String.valueOf(doctor.getNumColegiado()));
+
+            // Añadir listener para guardar cambios
+            editarDoctorForm.addGuardarButtonListener(e -> {
+                // Actualizar los datos del doctor
+                doctor.setNombre(editarDoctorForm.getNombreField().getText());
+                doctor.setApellidos(editarDoctorForm.getApellidosField().getText());
+                doctor.setDni(editarDoctorForm.getDniField().getText());
+                doctor.setTelefono(editarDoctorForm.getTelefonoField().getText());
+                doctor.setDireccion(editarDoctorForm.getDireccionField().getText());
+                doctor.setCodPostal(Integer.parseInt(editarDoctorForm.getCodPostalField().getText()));
+                doctor.setEmail(editarDoctorForm.getEmailField().getText());
+                doctor.setNumColegiado(Integer.parseInt(editarDoctorForm.getNumColegiadoField().getText()));
+
+                // Crear el controlador para el formulario de edición
+                new DoctorEditarController(editarDoctorForm, this);
+                editarDoctorForm.setVisible(true);
+                // Actualizar la tabla de doctores
+                actualizarTabla(); // Llama al método para refrescar la tabla
+                editarDoctorForm.dispose(); // Cierra el formulario de edición
+            });
+
+            editarDoctorForm.setVisible(true); // Hacer visible el formulario de edición
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo encontrar el doctor a editar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+    // Método para actualizar la tabla de doctores
+    private void actualizarTabla() {
+        IDoctorService doctorService = new DoctorServiceImpl(); // Crear una nueva instancia del servicio
+        List<Doctor> doctores = doctorService.getAllDoctor(); // Obtener la lista actualizada de doctores
+        setDoctoresData(doctores); // Llamar al método para llenar la tabla
+    }
+
+
+
+    // Método para llenar la tabla con la lista de doctores
     public void setDoctoresData(List<Doctor> doctores) {
         tableModel.setRowCount(0);  // Limpiar los datos actuales de la tabla
         for (Doctor doctor : doctores) {

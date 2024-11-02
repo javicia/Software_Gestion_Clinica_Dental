@@ -26,7 +26,7 @@ public class DoctorDetails extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(parent);  // Centrar la ventana en la pantalla
 
-        contentPane = new JPanel(new GridLayout(9, 2));  // Usar GridLayout para organizar los elementos
+        contentPane = new JPanel(new GridLayout(10, 2));  // Usar GridLayout para organizar los elementos
 
         // Inicializar etiquetas con los valores
         nombreLabel = new JLabel(nombre);
@@ -36,7 +36,11 @@ public class DoctorDetails extends JFrame {
         direccionLabel = new JLabel(direccion);
         codPostalLabel = new JLabel(codPostal);
         emailLabel = new JLabel(email);
-        numColegiadoLabel = new JLabel(numColegiado.toString());
+
+        // Verificar si numColegiado es null antes de asignarlo a la etiqueta
+        numColegiadoLabel = new JLabel(numColegiado != null ? numColegiado.toString() : "");
+
+
 
         // Inicializar botones
         buttonOK = new JButton("OK");

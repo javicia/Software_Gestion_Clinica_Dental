@@ -4,6 +4,7 @@ import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.view.doctor.DoctorAgregar;
+import com.clinicadental.view.doctor.DoctorEditar;
 import com.clinicadental.view.doctor.GestionDoctor;
 
 import javax.swing.*;
@@ -14,24 +15,24 @@ import java.awt.event.ActionListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DoctorAgregarController {
+public class DoctorEditarController {
     private IDoctorService doctorService;
-    private DoctorAgregar doctorForm;
+    private DoctorEditar doctorForm;
     private GestionDoctor doctorTable;
 
-    public DoctorAgregarController(DoctorAgregar doctorForm, GestionDoctor doctorTable) {
+    public DoctorEditarController(DoctorEditar doctorForm, GestionDoctor doctorTable) {
         this.doctorForm = doctorForm;
         this.doctorTable = doctorTable;
         this.doctorService = new DoctorServiceImpl();
 
         // Configurar los eventos de los botones en el controlador
-        this.doctorForm.addGuardarButtonListener(new GuardarDoctorListener());
+        this.doctorForm.addGuardarButtonListener(new EditarDoctorListener());
         this.doctorForm.addLimpiarButtonListener(new LimpiarCamposListener());
         this.doctorForm.addRetrocederButtonListener(new RetrocederListener());
     }
 
     // Listener para el botón Guardar
-    class GuardarDoctorListener implements ActionListener {
+    class EditarDoctorListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             // Obtener los datos del formulario
@@ -50,30 +51,38 @@ public class DoctorAgregarController {
             // Realizar validaciones
             boolean isValid = true;
 
-            // Validar DNI (8 dígitos + letra)
+            // Validar DNI
             if (!validarDNI(dni)) {
                 marcarCampoInvalido(doctorForm.getDniField(), doctorForm.getDniAsterisk());
                 isValid = false;
             }
 
-            // Validar teléfono (solo dígitos, longitud entre 9-12)
+            // Validar teléfono
             if (!validarTelefono(telefono)) {
                 marcarCampoInvalido(doctorForm.getTelefonoField(), doctorForm.getTelefonoAsterisk());
                 isValid = false;
             }
 
-            // Validar email (formato estándar de correo electrónico)
+            // Validar email
             if (!validarEmail(email)) {
                 marcarCampoInvalido(doctorForm.getEmailField(), doctorForm.getEmailAsterisk());
                 isValid = false;
             }
-            // Validar que el campo número de colegiado no esté vacío
+
+            // Validar número de colegiado
             if (numColegiadoText.isEmpty()) {
                 marcarCampoInvalido(doctorForm.getNumColegiadoField(), null);
-                JOptionPane.showMessageDialog(doctorForm, "El número de colegiado es obligatorio.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 isValid = false;
+                JOptionPane.showMessageDialog(doctorForm, "El número de colegiado es obligatorio.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+            } else {
+                try {
+                    Integer.parseInt(numColegiadoText); // Verificar que se pueda convertir a entero
+                } catch (NumberFormatException ex) {
+                    marcarCampoInvalido(doctorForm.getNumColegiadoField(), null);
+                    isValid = false;
+                    JOptionPane.showMessageDialog(doctorForm, "Número de colegiado no válido.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+                }
             }
-
 
             // Si algún campo es inválido, mostrar una alerta
             if (!isValid) {
@@ -81,7 +90,7 @@ public class DoctorAgregarController {
                 return;
             }
 
-            // Crear un nuevo objeto Doctor si los datos son válidos
+            // Crear un objeto Doctor con los datos editados
             Doctor doctor = new Doctor();
             doctor.setNombre(nombre);
             doctor.setApellidos(apellidos);
@@ -90,25 +99,13 @@ public class DoctorAgregarController {
             doctor.setDireccion(direccion);
             doctor.setCodPostal(Integer.parseInt(codPostal));
             doctor.setEmail(email);
+            doctor.setNumColegiado(Integer.parseInt(numColegiadoText)); // Asignar el número de colegiado
 
-
-            // Asignar el número de colegiado (verificar si es un número válido)
-            if (!numColegiadoText.isEmpty()) {
-                try {
-                    int numColegiado = Integer.parseInt(numColegiadoText);
-                    doctor.setNumColegiado(numColegiado);
-                } catch (NumberFormatException ex) {
-                    marcarCampoInvalido(doctorForm.getNumColegiadoField(), null);
-                    JOptionPane.showMessageDialog(doctorForm, "Número de colegiado no válido.", "Error de validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            // Guardar el doctor usando el servicio
-            doctorService.saveDoctor(doctor);
+            // Actualizar el doctor usando el servicio
+            doctorService.updateDoctor(doctor);
 
             // Mostrar mensaje de confirmación
-            JOptionPane.showMessageDialog(doctorForm, "Doctor guardado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(doctorForm, "Doctor editado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             // Limpiar los campos del formulario después de guardar
             doctorForm.limpiarCampos();
@@ -120,6 +117,7 @@ public class DoctorAgregarController {
             doctorForm.dispose();
         }
     }
+
 
     // Método para marcar un campo como inválido (borde rojo y mostrar asterisco rojo)
     private void marcarCampoInvalido(JTextField field, JLabel asterisk) {

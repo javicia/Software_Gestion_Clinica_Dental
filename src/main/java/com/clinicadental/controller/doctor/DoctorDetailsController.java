@@ -9,6 +9,7 @@ import com.clinicadental.view.doctor.GestionDoctor;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class DoctorDetailsController {
     private IDoctorService doctorService;
@@ -62,45 +63,36 @@ public class DoctorDetailsController {
         }
     }
 
-    // Mostrar el cuadro de diálogo de confirmación
+    // Método para mostrar el cuadro de diálogo de confirmación
     private void mostrarConfirmDialog(Doctor doctor, DoctorDetails detailsDialog) {
-        System.out.println("Intentando mostrar el JOptionPane de confirmación");
-
-        // Mostrar el cuadro de diálogo de confirmación
         int confirm = JOptionPane.showConfirmDialog(
-                detailsDialog, // Cambié null a detailsDialog para asegurar que sea modal respecto al diálogo de detalles
-                "¿Está seguro de que desea eliminar este paciente?",
+                detailsDialog,
+                "¿Está seguro de que desea eliminar este doctor?",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION
         );
 
-        // Verificar qué opción eligió el usuario
-        System.out.println("Respuesta del JOptionPane: " + confirm);
-
-        // Si el usuario confirma (opción "Sí")
         if (confirm == JOptionPane.YES_OPTION) {
             eliminarDoctor(doctor, detailsDialog);
-        } else {
-            System.out.println("Eliminación cancelada por el usuario.");
         }
     }
 
-    // Método para eliminar el paciente de la base de datos y actualizar la tabla
+    // Método para eliminar el doctor de la base de datos y actualizar la tabla
     private void eliminarDoctor(Doctor doctor, DoctorDetails detailsDialog) {
-        System.out.println("Eliminando paciente: " + doctor.getDni());
+        // Eliminar el doctor de la base de datos
+        doctorService.deleteDoctor(doctor); // Llama al método del servicio para eliminar el doctor
 
-        // Eliminar paciente de la base de datos
-        doctorService.deleteDoctor(doctor);
-
-        // Actualizar la tabla con los pacientes restantes
-        doctorTable.setDoctoresData(doctorService.getAllDoctor());
+        // Actualiza la tabla de doctores
+        List<Doctor> doctoresActualizados = doctorService.getAllDoctor(); // Obtiene la lista actualizada de doctores
+        doctorTable.setDoctoresData(doctoresActualizados); // Actualiza el modelo de la tabla en la vista
 
         // Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(null, "Doctor eliminado exitosamente.");
+        JOptionPane.showMessageDialog(null, "Doctor eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
         // Cerrar el diálogo de detalles
         detailsDialog.cerrarDialogo();
     }
+
 
     private Doctor obtenerDoctorDesdeTabla(int rowIndex) {
         String dni = (String) doctorTable.getDoctorTable().getValueAt(rowIndex, 2);
