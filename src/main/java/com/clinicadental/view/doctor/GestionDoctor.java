@@ -195,31 +195,15 @@ public class GestionDoctor extends JFrame {
             editarDoctorForm.getEmailField().setText(doctor.getEmail());
             editarDoctorForm.getNumColegiadoField().setText(String.valueOf(doctor.getNumColegiado()));
 
-            // Añadir listener para guardar cambios
-            editarDoctorForm.addGuardarButtonListener(e -> {
-                // Actualizar los datos del doctor
-                doctor.setNombre(editarDoctorForm.getNombreField().getText());
-                doctor.setApellidos(editarDoctorForm.getApellidosField().getText());
-                doctor.setDni(editarDoctorForm.getDniField().getText());
-                doctor.setTelefono(editarDoctorForm.getTelefonoField().getText());
-                doctor.setDireccion(editarDoctorForm.getDireccionField().getText());
-                doctor.setCodPostal(Integer.parseInt(editarDoctorForm.getCodPostalField().getText()));
-                doctor.setEmail(editarDoctorForm.getEmailField().getText());
-                doctor.setNumColegiado(Integer.parseInt(editarDoctorForm.getNumColegiadoField().getText()));
+            // Crea el controlador con los tres argumentos
+            new DoctorEditarController(doctor, editarDoctorForm, this);
 
-                // Crear el controlador para el formulario de edición
-                new DoctorEditarController(editarDoctorForm, this);
-                editarDoctorForm.setVisible(true);
-                // Actualizar la tabla de doctores
-                actualizarTabla(); // Llama al método para refrescar la tabla
-                editarDoctorForm.dispose(); // Cierra el formulario de edición
-            });
-
-            editarDoctorForm.setVisible(true); // Hacer visible el formulario de edición
+            editarDoctorForm.setVisible(true); // Mostrar el formulario de edición
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo encontrar el doctor a editar.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
 
     // Método para actualizar la tabla de doctores

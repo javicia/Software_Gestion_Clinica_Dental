@@ -1,10 +1,11 @@
-package com.clinicadental.view.doctor;
+package com.clinicadental.view.paciente;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class DoctorEditar extends JFrame {
+public class PacienteEditar extends JFrame {
+
     private JTextField nombreField;
     private JTextField apellidosField;
     private JTextField dniField;
@@ -12,7 +13,6 @@ public class DoctorEditar extends JFrame {
     private JTextField direccionField;
     private JTextField codPostalField;
     private JTextField emailField;
-    private JTextField numColegiadoField;
     private JButton guardarButton;
     private JButton limpiarButton;
     private JButton retrocederButton;
@@ -23,13 +23,13 @@ public class DoctorEditar extends JFrame {
     private JLabel telefonoAsterisk;
     private JLabel emailAsterisk;
 
-    public DoctorEditar() {
+    public PacienteEditar() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel formPanel = new JPanel(new GridLayout(8, 3, 10, 10));  // Ajuste a 8 filas para incluir "NumColegiado"
-        formPanel.setBorder(BorderFactory.createTitledBorder("Editar Doctor"));
+        formPanel.setBorder(BorderFactory.createTitledBorder("Editar Paciente"));
 
         // Añadir etiquetas y campos de texto
         formPanel.add(new JLabel("Nombre:"));
@@ -73,11 +73,6 @@ public class DoctorEditar extends JFrame {
         emailAsterisk.setForeground(Color.BLACK);
         formPanel.add(emailAsterisk);
 
-        formPanel.add(new JLabel("Número de Colegiado:"));
-        numColegiadoField = new JTextField(20);  // Inicialización del campo numColegiadoField
-        formPanel.add(numColegiadoField);
-        formPanel.add(new JLabel());
-
         JPanel buttonPanel = new JPanel();
         guardarButton = new JButton("Guardar");
         limpiarButton = new JButton("Limpiar");
@@ -91,7 +86,7 @@ public class DoctorEditar extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
-        setTitle("Editar Doctor");
+        setTitle("Editar Paciente");
         setSize(500, 400);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -106,7 +101,6 @@ public class DoctorEditar extends JFrame {
         direccionField.setText("");
         codPostalField.setText("");
         emailField.setText("");
-        numColegiadoField.setText("");
     }
 
 
@@ -137,10 +131,6 @@ public class DoctorEditar extends JFrame {
 
     public JTextField getEmailField() {
         return emailField;
-    }
-
-    public JTextField getNumColegiadoField() {
-        return numColegiadoField;
     }
 
     public JLabel getDniAsterisk() {

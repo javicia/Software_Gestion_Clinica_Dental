@@ -3,7 +3,6 @@ package com.clinicadental.controller.doctor;
 import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
-import com.clinicadental.view.doctor.DoctorAgregar;
 import com.clinicadental.view.doctor.DoctorEditar;
 import com.clinicadental.view.doctor.GestionDoctor;
 
@@ -19,16 +18,33 @@ public class DoctorEditarController {
     private IDoctorService doctorService;
     private DoctorEditar doctorForm;
     private GestionDoctor doctorTable;
+    private Doctor doctor;  // Objeto Doctor a editar
 
-    public DoctorEditarController(DoctorEditar doctorForm, GestionDoctor doctorTable) {
+    public DoctorEditarController(Doctor doctor, DoctorEditar doctorForm, GestionDoctor doctorTable) {
+        this.doctor = doctor;
         this.doctorForm = doctorForm;
         this.doctorTable = doctorTable;
         this.doctorService = new DoctorServiceImpl();
+
+        // Inicializar el formulario con los datos del doctor
+        inicializarFormulario();
 
         // Configurar los eventos de los botones en el controlador
         this.doctorForm.addGuardarButtonListener(new EditarDoctorListener());
         this.doctorForm.addLimpiarButtonListener(new LimpiarCamposListener());
         this.doctorForm.addRetrocederButtonListener(new RetrocederListener());
+    }
+
+    // Método para inicializar el formulario con los datos del doctor existente
+    private void inicializarFormulario() {
+        doctorForm.getNombreField().setText(doctor.getNombre());
+        doctorForm.getApellidosField().setText(doctor.getApellidos());
+        doctorForm.getDniField().setText(doctor.getDni());
+        doctorForm.getTelefonoField().setText(doctor.getTelefono());
+        doctorForm.getDireccionField().setText(doctor.getDireccion());
+        doctorForm.getCodPostalField().setText(String.valueOf(doctor.getCodPostal()));
+        doctorForm.getEmailField().setText(doctor.getEmail());
+        doctorForm.getNumColegiadoField().setText(String.valueOf(doctor.getNumColegiado()));
     }
 
     // Listener para el botón Guardar
@@ -90,8 +106,7 @@ public class DoctorEditarController {
                 return;
             }
 
-            // Crear un objeto Doctor con los datos editados
-            Doctor doctor = new Doctor();
+            // Actualizar el objeto Doctor con los datos editados
             doctor.setNombre(nombre);
             doctor.setApellidos(apellidos);
             doctor.setDni(dni);
@@ -117,7 +132,6 @@ public class DoctorEditarController {
             doctorForm.dispose();
         }
     }
-
 
     // Método para marcar un campo como inválido (borde rojo y mostrar asterisco rojo)
     private void marcarCampoInvalido(JTextField field, JLabel asterisk) {

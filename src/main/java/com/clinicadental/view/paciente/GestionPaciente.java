@@ -1,11 +1,9 @@
 package com.clinicadental.view.paciente;
 
 import com.clinicadental.controller.paciente.PacienteAgregarController;
-import com.clinicadental.model.Entity.Doctor;
+import com.clinicadental.controller.paciente.PacienteEditarController;
 import com.clinicadental.model.Entity.Paciente;
-import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.IPacienteService;
-import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.service.impl.PacienteServiceImpl;
 
 import javax.swing.*;
@@ -144,9 +142,39 @@ public class GestionPaciente extends JFrame {
         detallesDialog.cerrarDialogo(); // Cierra el diálogo de detalles
         actualizarTabla(); // Método que debes implementar para refrescar la tabla
     });
- detallesDialog.setVisible(true);
+        // Agregar listener para el botón de editar
+        detallesDialog.addEditListener(e -> {
+            editarPaciente(dni); // Pasar el dni del paciente o el objeto Paciente
+            detallesDialog.cerrarDialogo(); // Cerrar el diálogo de detalles
+        });
+        detallesDialog.setVisible(true);
 }
+    private void editarPaciente(String dni) {
+        IPacienteService pacienteService = new PacienteServiceImpl();
+        Paciente paciente = pacienteService.obtenerTodos().stream()
+                .filter(p -> p.getDni() != null && p.getDni().equals(dni))
+                .findFirst()
+                .orElse(null);
 
+        if (paciente != null) {
+           PacienteEditar editarPacienteForm = new PacienteEditar();
+            editarPacienteForm.getNombreField().setText(paciente.getNombre());
+            editarPacienteForm.getApellidosField().setText(paciente.getApellidos());
+            editarPacienteForm.getDniField().setText(paciente.getDni());
+            editarPacienteForm.getTelefonoField().setText(paciente.getTelefono());
+            editarPacienteForm.getDireccionField().setText(paciente.getDireccion());
+            editarPacienteForm.getCodPostalField().setText(String.valueOf(paciente.getCodPostal()));
+            editarPacienteForm.getEmailField().setText(paciente.getEmail());
+
+
+            // Crea el controlador con los tres argumentos
+            new PacienteEditarController(paciente, editarPacienteForm, this);
+
+            editarPacienteForm.setVisible(true); // Mostrar el formulario de edición
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo encontrar el paciente a editar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     // Método para eliminar el doctor de la base de datos
     private void eliminarPaciente(String dni) {
         // Crear una instancia del servicio de doctor
