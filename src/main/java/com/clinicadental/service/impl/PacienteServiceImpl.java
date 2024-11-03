@@ -25,12 +25,12 @@ public class PacienteServiceImpl implements IPacienteService {
     }
 
     @Override
-    public Paciente getPacienteById(int id) {
-        return pacienteDao.getIdPaciente(id);
+    public List<Paciente> obtenerTodos() {
+        return pacienteDao.obtenerTodos();
     }
 
     @Override
-    public List<Paciente> obtenerTodos() {
-        return pacienteDao.obtenerTodos();
+    public List<Paciente> findPacienteByName(String name) {
+        return pacienteDao.findPacienteByName(name);
     }
 }

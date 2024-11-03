@@ -3,6 +3,7 @@ package com.clinicadental.controller.paciente;
 import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.PacienteServiceImpl;
+import com.clinicadental.utils.ValidatorUtil;
 import com.clinicadental.view.paciente.GestionPaciente;
 import com.clinicadental.view.paciente.PacienteEditar;
 
@@ -62,28 +63,23 @@ public class PacienteEditarController {
             // Restablecer estilos por defecto
             resetFieldStyles();
 
-            // Realizar validaciones
+            // Realizar validaciones desde ValidatorUtil
             boolean isValid = true;
 
-            // Validar DNI
-            if (!validarDNI(dni)) {
+            //iniciamos validaciones desde el
+            if (!ValidatorUtil.validarDNI(dni)) {
                 marcarCampoInvalido(pacienteForm.getDniField(), pacienteForm.getDniAsterisk());
                 isValid = false;
             }
-
-            // Validar teléfono
-            if (!validarTelefono(telefono)) {
+            if (!ValidatorUtil.validarTelefono(telefono)) {
                 marcarCampoInvalido(pacienteForm.getTelefonoField(), pacienteForm.getTelefonoAsterisk());
                 isValid = false;
             }
 
-            // Validar email
-            if (!validarEmail(email)) {
+            if (!ValidatorUtil.validarEmail(email)) {
                 marcarCampoInvalido(pacienteForm.getEmailField(), pacienteForm.getEmailAsterisk());
                 isValid = false;
             }
-
-            // Si algún campo es inválido, mostrar una alerta
             if (!isValid) {
                 JOptionPane.showMessageDialog(pacienteForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -121,30 +117,6 @@ public class PacienteEditarController {
         if (asterisk != null) {
             asterisk.setForeground(Color.RED);  // Cambiar el color del asterisco a rojo si no es null
         }
-    }
-
-    // Método para validar el DNI (8 dígitos seguidos de una letra)
-    private boolean validarDNI(String dni) {
-        String dniPattern = "\\d{8}[A-Za-z]";  // 8 dígitos + 1 letra
-        Pattern pattern = Pattern.compile(dniPattern);
-        Matcher matcher = pattern.matcher(dni);
-        return matcher.matches();
-    }
-
-    // Método para validar el teléfono (solo números, longitud entre 9-12 dígitos)
-    private boolean validarTelefono(String telefono) {
-        String telefonoPattern = "\\d{9,12}";  // Solo dígitos, longitud entre 9 y 12
-        Pattern pattern = Pattern.compile(telefonoPattern);
-        Matcher matcher = pattern.matcher(telefono);
-        return matcher.matches();
-    }
-
-    // Método para validar el email (formato estándar)
-    private boolean validarEmail(String email) {
-        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";  // Patrón estándar para email
-        Pattern pattern = Pattern.compile(emailPattern);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
     }
 
     // Restablecer el estilo de todos los campos

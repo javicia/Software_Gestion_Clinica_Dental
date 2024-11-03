@@ -1,5 +1,6 @@
 package com.clinicadental.model.Dao;
 
+import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.utils.HibernateUtil;
 import org.hibernate.Session;
@@ -63,4 +64,16 @@ public class PacienteDao {
             return session.createQuery("from Paciente", Paciente.class).list();
         }
     }
+
+    public List<Paciente> findPacienteByName(String name) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Paciente where nombre = :name", Paciente.class)
+                    .setParameter("name", name)
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

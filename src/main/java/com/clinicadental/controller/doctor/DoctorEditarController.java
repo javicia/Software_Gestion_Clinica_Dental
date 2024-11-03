@@ -3,6 +3,7 @@ package com.clinicadental.controller.doctor;
 import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
+import com.clinicadental.utils.ValidatorUtil;
 import com.clinicadental.view.doctor.DoctorEditar;
 import com.clinicadental.view.doctor.GestionDoctor;
 
@@ -68,39 +69,30 @@ public class DoctorEditarController {
             boolean isValid = true;
 
             // Validar DNI
-            if (!validarDNI(dni)) {
+            if (!ValidatorUtil.validarDNI(dni)) {
                 marcarCampoInvalido(doctorForm.getDniField(), doctorForm.getDniAsterisk());
                 isValid = false;
             }
 
             // Validar teléfono
-            if (!validarTelefono(telefono)) {
+            if (!ValidatorUtil.validarTelefono(telefono)) {
                 marcarCampoInvalido(doctorForm.getTelefonoField(), doctorForm.getTelefonoAsterisk());
                 isValid = false;
             }
 
             // Validar email
-            if (!validarEmail(email)) {
+            if (!ValidatorUtil.validarEmail(email)) {
                 marcarCampoInvalido(doctorForm.getEmailField(), doctorForm.getEmailAsterisk());
                 isValid = false;
             }
 
             // Validar número de colegiado
-            if (numColegiadoText.isEmpty()) {
+            if (!ValidatorUtil.validarNumColegiado(numColegiadoText)) {
                 marcarCampoInvalido(doctorForm.getNumColegiadoField(), null);
+                JOptionPane.showMessageDialog(doctorForm, "Número de colegiado no válido o vacío.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 isValid = false;
-                JOptionPane.showMessageDialog(doctorForm, "El número de colegiado es obligatorio.", "Error de validación", JOptionPane.ERROR_MESSAGE);
-            } else {
-                try {
-                    Integer.parseInt(numColegiadoText); // Verificar que se pueda convertir a entero
-                } catch (NumberFormatException ex) {
-                    marcarCampoInvalido(doctorForm.getNumColegiadoField(), null);
-                    isValid = false;
-                    JOptionPane.showMessageDialog(doctorForm, "Número de colegiado no válido.", "Error de validación", JOptionPane.ERROR_MESSAGE);
-                }
             }
 
-            // Si algún campo es inválido, mostrar una alerta
             if (!isValid) {
                 JOptionPane.showMessageDialog(doctorForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -139,30 +131,6 @@ public class DoctorEditarController {
         if (asterisk != null) {
             asterisk.setForeground(Color.RED);  // Cambiar el color del asterisco a rojo si no es null
         }
-    }
-
-    // Método para validar el DNI (8 dígitos seguidos de una letra)
-    private boolean validarDNI(String dni) {
-        String dniPattern = "\\d{8}[A-Za-z]";  // 8 dígitos + 1 letra
-        Pattern pattern = Pattern.compile(dniPattern);
-        Matcher matcher = pattern.matcher(dni);
-        return matcher.matches();
-    }
-
-    // Método para validar el teléfono (solo números, longitud entre 9-12 dígitos)
-    private boolean validarTelefono(String telefono) {
-        String telefonoPattern = "\\d{9,12}";  // Solo dígitos, longitud entre 9 y 12
-        Pattern pattern = Pattern.compile(telefonoPattern);
-        Matcher matcher = pattern.matcher(telefono);
-        return matcher.matches();
-    }
-
-    // Método para validar el email (formato estándar)
-    private boolean validarEmail(String email) {
-        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";  // Patrón estándar para email
-        Pattern pattern = Pattern.compile(emailPattern);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
     }
 
     // Restablecer el estilo de todos los campos

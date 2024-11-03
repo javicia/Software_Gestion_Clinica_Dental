@@ -110,6 +110,18 @@ public class DoctorAgregar extends JFrame {
         numColegiadoField.setText("");
     }
 
+    // Métodos para agregar los listeners de los botones
+    public void addGuardarButtonListener(ActionListener listener) {
+        guardarButton.addActionListener(listener);
+    }
+
+    public void addLimpiarButtonListener(ActionListener listener) {
+        limpiarButton.addActionListener(listener);
+    }
+
+    public void addRetrocederButtonListener(ActionListener listener) {
+        retrocederButton.addActionListener(listener);
+    }
 
     // Getter y setter
     public JTextField getNombreField() {
@@ -156,16 +168,4 @@ public class DoctorAgregar extends JFrame {
         return emailAsterisk;
     }
 
-    // Métodos para agregar los listeners de los botones
-    public void addGuardarButtonListener(ActionListener listener) {
-        guardarButton.addActionListener(listener);
-    }
-
-    public void addLimpiarButtonListener(ActionListener listener) {
-        limpiarButton.addActionListener(listener);
-    }
-
-    public void addRetrocederButtonListener(ActionListener listener) {
-        retrocederButton.addActionListener(listener);
-    }
 }

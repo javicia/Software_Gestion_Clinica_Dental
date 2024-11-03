@@ -57,4 +57,16 @@ public class DoctorDao {
             return session.createQuery("from Doctor", Doctor.class).list();
         }
     }
+    public List<Doctor> findDoctorByName(String name) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Doctor where nombre = :name", Doctor.class)
+                    .setParameter("name", name)
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }

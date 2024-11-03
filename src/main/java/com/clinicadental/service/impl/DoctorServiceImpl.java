@@ -27,13 +27,13 @@ public class DoctorServiceImpl implements IDoctorService {
     }
 
     @Override
-    public Doctor getDoctorId(int id) {
-        return doctorDao.getDoctorId(id);
+    public List<Doctor> getAllDoctor() {
+        return doctorDao.getAllDoctor();
     }
 
     @Override
-    public List<Doctor> getAllDoctor() {
-        return doctorDao.getAllDoctor();
+    public List<Doctor> findDoctorByName(String name) {
+        return doctorDao.findDoctorByName(name);
     }
 }
 
