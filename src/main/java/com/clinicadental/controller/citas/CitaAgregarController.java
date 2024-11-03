@@ -22,8 +22,6 @@ import java.util.Date;
 
 public class CitaAgregarController {
     private ICitasService citasService;
-    private IDoctorService doctorService;
-    private IPacienteService pacienteService;
     private CitaAgregar citaForm;
     private GestionCita citaTable;
 
@@ -31,8 +29,6 @@ public class CitaAgregarController {
         this.citaForm = citaForm;
         this.citaTable = citaTable;
         this.citasService = new CitasServiceImpl();
-        this.doctorService = new DoctorServiceImpl();
-        this.pacienteService = new PacienteServiceImpl();
 
         // Configurar los eventos de los botones en el controlador
         this.citaForm.addGuardarButtonListener(new GuardarCitaListener());
@@ -40,83 +36,66 @@ public class CitaAgregarController {
         this.citaForm.addRetrocederButtonListener(new RetrocederListener());
     }
 
-    // Listener para el botón Guardar
+    // Método dentro de CitaAgregarController
     class GuardarCitaListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Obtener los datos del formulario
-            String fechaTexto = citaForm.getFechaField().getText();
+            Date fecha = citaForm.getFechaSeleccionada();
             String horaTexto = citaForm.getHoraField().getText();
             String motivo = citaForm.getMotivoField().getText();
-            String pacienteTexto = citaForm.getPacienteField().getText();
-            String doctorTexto = citaForm.getDoctorField().getText();
+            String pacienteTexto = (String) citaForm.getPacienteField().getSelectedItem(); // Obtener paciente seleccionado
+            String doctorTexto = (String) citaForm.getDoctorField().getSelectedItem();
 
-            // Restablecer estilos por defecto
             resetFieldStyles();
             boolean isValid = true;
 
-            // Validar fecha
-            Date fecha = ValidatorUtil.validarFecha(fechaTexto);
             if (fecha == null) {
-                marcarCampoInvalido(citaForm.getFechaField(), citaForm.getFechaAsterisk());
+                citaForm.getFechaAsterisk().setForeground(Color.RED);
                 isValid = false;
             }
 
-            // Validar hora
             Date hora = ValidatorUtil.validarHora(horaTexto);
             if (hora == null) {
                 marcarCampoInvalido(citaForm.getHoraField(), citaForm.getHoraAsterisk());
                 isValid = false;
             }
 
-            // Validar que el paciente exista
-            Paciente pacienteSeleccionado = ValidatorUtil.validarPaciente(pacienteTexto, pacienteService);
-            if (pacienteSeleccionado == null) {
-                marcarCampoInvalido(citaForm.getPacienteField(), citaForm.getPacienteAsterisk());
-                isValid = false;
-                JOptionPane.showMessageDialog(citaForm, "Paciente no encontrado o existen múltiples pacientes con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            // Validar que el doctor exista
-            Doctor doctorSeleccionado = ValidatorUtil.validarDoctor(doctorTexto, doctorService);
-            if (doctorSeleccionado == null) {
-                marcarCampoInvalido(citaForm.getDoctorField(), citaForm.getDoctorAsterisk());
-                isValid = false;
-                JOptionPane.showMessageDialog(citaForm, "Doctor no encontrado o existen múltiples doctores con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            // Asumimos que `pacienteTexto` y `doctorTexto` son válidos, ya que solo pueden ser seleccionados de las listas disponibles
 
             if (!isValid) {
                 JOptionPane.showMessageDialog(citaForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Crear un nuevo objeto Cita
+            // Crear y guardar la cita
             Cita cita = new Cita();
             cita.setFecha(fecha);
             cita.setHora(hora);
             cita.setMotivo(motivo);
-            cita.setPaciente(pacienteSeleccionado);
-            cita.setDoctor(doctorSeleccionado);
 
-            // Guardar la cita usando el servicio
+            // Crear el objeto Paciente y establecer su nombre
+            Paciente paciente = new Paciente();
+            paciente.setNombre(pacienteTexto); // Usa el método setter para el nombre
+            cita.setPaciente(paciente);
+
+            // Crear el objeto Doctor y establecer su nombre
+            Doctor doctor = new Doctor();
+            doctor.setNombre(doctorTexto); // Usa el método setter para el nombre
+            cita.setDoctor(doctor);
+
             citasService.saveCita(cita);
 
-            // Mostrar mensaje de confirmación
+            citaTable.actualizarTabla();
             JOptionPane.showMessageDialog(citaForm, "Cita guardada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-            // Limpiar los campos del formulario después de guardar
             citaForm.limpiarCampos();
-
-            // Actualizar la tabla de citas
             citaTable.setCitasData(citasService.getAllCitas());
 
-            // Cerrar el formulario
             citaForm.dispose();
         }
     }
 
-    // Métodos auxiliares para formateo y marcado de campos (sin cambios)
-    private void marcarCampoInvalido(JTextField field, JLabel asterisk) {
+    private void marcarCampoInvalido(JComponent field, JLabel asterisk) {
         field.setBorder(new LineBorder(Color.RED, 2));
         if (asterisk != null) {
             asterisk.setForeground(Color.RED);
@@ -124,20 +103,18 @@ public class CitaAgregarController {
     }
 
     private void resetFieldStyles() {
-        resetFieldStyle(citaForm.getFechaField(), citaForm.getFechaAsterisk());
         resetFieldStyle(citaForm.getHoraField(), citaForm.getHoraAsterisk());
-        resetFieldStyle(citaForm.getPacienteField(), citaForm.getPacienteAsterisk());
-        resetFieldStyle(citaForm.getDoctorField(), citaForm.getDoctorAsterisk());
+        citaForm.getFechaAsterisk().setForeground(Color.BLACK);
     }
 
-    private void resetFieldStyle(JTextField field, JLabel asterisk) {
+    private void resetFieldStyle(JComponent field, JLabel asterisk) {
         field.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
         if (asterisk != null) {
             asterisk.setForeground(Color.BLACK);
         }
     }
 
-    // Listener para el botón Limpiar (sin cambios)
+    // Listener para el botón Limpiar
     class LimpiarCamposListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -145,7 +122,7 @@ public class CitaAgregarController {
         }
     }
 
-    // Listener para el botón Retroceder (sin cambios)
+    // Listener para el botón Retroceder
     class RetrocederListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {

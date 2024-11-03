@@ -1,6 +1,8 @@
 package com.clinicadental.view.init;
 
+import com.clinicadental.controller.citas.GestionCitaController;
 import com.clinicadental.controller.doctor.GestionDoctorController;
+import com.clinicadental.view.citas.GestionCita;
 import com.clinicadental.view.doctor.GestionDoctor;
 import com.clinicadental.view.paciente.GestionPaciente;
 import com.clinicadental.controller.paciente.GestionPacienteController;
@@ -42,6 +44,7 @@ public class MainScreen extends JFrame {
         // Listener para el botón de Gestión de Pacientes
         pacienteButton.addActionListener(e -> abrirPacienteTable());
         doctorButton.addActionListener(e -> abrirDoctoresTable());
+        citasButton.addActionListener(e -> abrirCitasTable());
         // Listener para Gestión de Citas (agrega lógica aquí si es necesario)
 
         setContentPane(panel);
@@ -59,6 +62,13 @@ public class MainScreen extends JFrame {
         GestionDoctor doctorTableView = new GestionDoctor();
         new GestionDoctorController(doctorTableView);  // Controlador para gestionar la vista
         doctorTableView.setVisible(true);  // Mostrar la ventana de DoctorTable
+    }
+
+    // Método para abrir la vista de la tabla de doctores
+    private void abrirCitasTable() {
+        GestionCita citaTableView = new GestionCita();
+        new GestionCitaController(citaTableView);  // Controlador para gestionar la vista
+        citaTableView.setVisible(true);  // Mostrar la ventana de CitaTable
     }
 
     public static void main(String[] args) {

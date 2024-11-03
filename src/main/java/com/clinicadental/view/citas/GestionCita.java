@@ -3,7 +3,11 @@ package com.clinicadental.view.citas;
 import com.clinicadental.controller.citas.CitaAgregarController;
 import com.clinicadental.model.Entity.Cita;
 import com.clinicadental.service.ICitasService;
+import com.clinicadental.service.IDoctorService;
+import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.CitasServiceImpl;
+import com.clinicadental.service.impl.DoctorServiceImpl;
+import com.clinicadental.service.impl.PacienteServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -14,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GestionCita extends JFrame {
     private JTable citaTable;
@@ -23,9 +28,13 @@ public class GestionCita extends JFrame {
     private JButton addButton;
     private JPanel mainPanel;
     private ICitasService citasService;
+    private IPacienteService pacienteService;
+    private IDoctorService doctorService;
 
     public GestionCita() {
         citasService = new CitasServiceImpl();
+        pacienteService = new PacienteServiceImpl();
+        doctorService = new DoctorServiceImpl();
 
         // Configuración de la ventana principal
         mainPanel = new JPanel(new BorderLayout());
@@ -123,10 +132,23 @@ public class GestionCita extends JFrame {
         // Cargar datos de citas
         actualizarTabla();
     }
-
     // Método para abrir el formulario de añadir cita
     private void abrirCitaForm() {
-        CitaAgregar citaForm = new CitaAgregar();
+
+        // Obtener la lista de pacientes ordenados por apellidos + nombre
+        List<String> pacientesOrdenados = pacienteService.obtenerTodos().stream()
+                .map(paciente -> paciente.getApellidos() + ", " + paciente.getNombre())
+                .sorted()
+                .collect(Collectors.toList());
+
+        // Obtener la lista de doctores ordenados por apellidos + nombre
+        List<String> doctoresOrdenados = doctorService.getAllDoctor().stream()
+                .map(doctor -> doctor.getApellidos() + ", " + doctor.getNombre())
+                .sorted()
+                .collect(Collectors.toList());
+
+        // Crear el formulario `CitaAgregar` con la lista de pacientes ordenados
+        CitaAgregar citaForm = new CitaAgregar(pacientesOrdenados, doctoresOrdenados);
         new CitaAgregarController(citaForm, this); // Pasar la referencia de GestionCita para actualizar la tabla
         citaForm.setVisible(true);  // Asegurarse de que el formulario sea visible
     }
@@ -165,7 +187,7 @@ public class GestionCita extends JFrame {
     }
 
     // Método para actualizar la tabla de citas
-    private void actualizarTabla() {
+    public void actualizarTabla() {
         List<Cita> citas = citasService.getAllCitas();
         setCitasData(citas);
     }
