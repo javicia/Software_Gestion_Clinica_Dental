@@ -30,7 +30,12 @@ public class PacienteServiceImpl implements IPacienteService {
     }
 
     @Override
-    public List<Paciente> findPacienteByName(String name) {
-        return pacienteDao.findPacienteByName(name);
+    public Paciente findByName(String name) {
+        return pacienteDao.findByName(name);
+    }
+
+    @Override
+    public List<Paciente> findListPacienteByName(String name) {
+        return pacienteDao.findListPacienteByName(name);
     }
 }

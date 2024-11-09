@@ -1,6 +1,7 @@
 package com.clinicadental.model.Dao;
 
 import com.clinicadental.model.Entity.Cita;
+import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -37,13 +38,21 @@ public class CitaDao {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.delete(cita);
-            transaction.commit();
+            Cita citaToDelete = session.get(Cita.class, cita.getId_cita());
+
+            if (citaToDelete != null) {
+                session.delete(citaToDelete);
+                System.out.println("Cita con ID " + cita.getId_cita() + " eliminada de la base de datos."); // Depuración
+                transaction.commit();
+            } else {
+                System.out.println("No se encontró la cita en la base de datos.");
+            }
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
         }
     }
+
 
     public Cita getCitaById(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -53,7 +62,17 @@ public class CitaDao {
 
     public List<Cita> getAllCitas() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Cita", Cita.class).list();
+            return session.createQuery("SELECT c FROM Cita c JOIN FETCH c.paciente JOIN FETCH c.doctor", Cita.class).list();
         }
     }
+
+
+    public Paciente findByName(String name) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Paciente WHERE nombre = :name", Paciente.class)
+                    .setParameter("name", name)
+                    .uniqueResult();
+        }
+    }
+
 }

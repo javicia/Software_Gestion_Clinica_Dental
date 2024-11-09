@@ -65,7 +65,7 @@ public class ValidatorUtil {
 
     // Validación de existencia de paciente
     public static Paciente validarPaciente(String nombrePaciente, IPacienteService pacienteService) {
-        List<Paciente> pacientes = pacienteService.findPacienteByName(nombrePaciente);
+        List<Paciente> pacientes = pacienteService.findListPacienteByName(nombrePaciente);
         if (pacientes == null || pacientes.isEmpty()) {
             return null;
         } else if (pacientes.size() > 1) {

@@ -46,11 +46,26 @@ public class DoctorDao {
         }
     }
 
-    public Doctor getDoctorId(int id) {
+    public Doctor findByName(String fullName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Doctor.class, id);
+            // Divide el nombre completo en nombre y apellidos
+            String[] parts = fullName.split(", ");
+            if (parts.length < 2) {
+                // Si no hay suficientes partes para nombre y apellidos, retorna null
+                return null;
+            }
+            String lastName = parts[0].trim();
+            String firstName = parts[1].trim();
+
+            return session.createQuery("FROM Doctor WHERE lower(trim(apellidos)) = :lastName AND lower(trim(nombre)) = :firstName", Doctor.class)
+                    .setParameter("lastName", lastName.toLowerCase())
+                    .setParameter("firstName", firstName.toLowerCase())
+                    .uniqueResult();
         }
     }
+
+
+
 
     public List<Doctor> getAllDoctor() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

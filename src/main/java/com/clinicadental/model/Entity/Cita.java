@@ -9,22 +9,26 @@ public class Cita {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cita")
     private int id_cita;
 
+    @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
 
+    @Column(name = "hora")
     @Temporal(TemporalType.TIME)
     private Date hora;
 
+    @Column(name = "motivo", length = 255)
     private String motivo;
 
-    @ManyToOne
-    @JoinColumn(name = "id_paciente")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 
-    @ManyToOne
-    @JoinColumn(name = "id_doctor")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_doctor", nullable = false)
     private Doctor doctor;
 
     // Getters y Setters

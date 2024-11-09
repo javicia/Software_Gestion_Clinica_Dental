@@ -23,56 +23,41 @@ public class PacienteAgregar extends JFrame {
     private JLabel emailAsterisk;
 
     public PacienteAgregar() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout(10, 10));
+        mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel formPanel = new JPanel(new GridLayout(7, 3, 10, 10));  // Ajustar para 3 columnas (Campo, Entrada, Asterisco)
-        formPanel.setBorder(BorderFactory.createTitledBorder("Registrar Paciente"));
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-        // Añadir etiquetas y campos de texto
-        formPanel.add(new JLabel("Nombre:"));
+        // Formato de campos de texto
+        Font smallFont = new Font("Arial", Font.PLAIN, 12);
+
+        // Añadir etiquetas y campos de texto con GridBagLayout
         nombreField = new JTextField(20);
-        formPanel.add(nombreField);
-        formPanel.add(new JLabel());  // No hay asterisco para este campo
-
-        formPanel.add(new JLabel("Apellidos:"));
         apellidosField = new JTextField(20);
-        formPanel.add(apellidosField);
-        formPanel.add(new JLabel());  // No hay asterisco para este campo
-
-        formPanel.add(new JLabel("DNI:"));
         dniField = new JTextField(20);
-        formPanel.add(dniField);
-        dniAsterisk = new JLabel("*");  // Asterisco rojo
-        dniAsterisk.setForeground(Color.BLACK);  // Color por defecto (negro o invisible)
-        formPanel.add(dniAsterisk);
-
-        formPanel.add(new JLabel("Teléfono:"));
         telefonoField = new JTextField(20);
-        formPanel.add(telefonoField);
-        telefonoAsterisk = new JLabel("*");
-        telefonoAsterisk.setForeground(Color.BLACK);
-        formPanel.add(telefonoAsterisk);
-
-        formPanel.add(new JLabel("Dirección:"));
         direccionField = new JTextField(20);
-        formPanel.add(direccionField);
-        formPanel.add(new JLabel());  // No hay asterisco para este campo
-
-        formPanel.add(new JLabel("Código Postal:"));
         codPostalField = new JTextField(20);
-        formPanel.add(codPostalField);
-        formPanel.add(new JLabel());  // No hay asterisco para este campo
-
-        formPanel.add(new JLabel("Email:"));
         emailField = new JTextField(20);
-        formPanel.add(emailField);
-        emailAsterisk = new JLabel("*");
-        emailAsterisk.setForeground(Color.BLACK);
-        formPanel.add(emailAsterisk);
 
-        JPanel buttonPanel = new JPanel();
+        dniAsterisk = crearAsterisco();
+        telefonoAsterisk = crearAsterisco();
+        emailAsterisk = crearAsterisco();
+
+        agregarCampo(formPanel, gbc, 0, "Nombre:", nombreField, null, smallFont);
+        agregarCampo(formPanel, gbc, 1, "Apellidos:", apellidosField, null, smallFont);
+        agregarCampo(formPanel, gbc, 2, "DNI:", dniField, dniAsterisk, smallFont);
+        agregarCampo(formPanel, gbc, 3, "Teléfono:", telefonoField, telefonoAsterisk, smallFont);
+        agregarCampo(formPanel, gbc, 4, "Dirección:", direccionField, null, smallFont);
+        agregarCampo(formPanel, gbc, 5, "Código Postal:", codPostalField, null, smallFont);
+        agregarCampo(formPanel, gbc, 6, "Email:", emailField, emailAsterisk, smallFont);
+
+        // Panel de botones
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         guardarButton = new JButton("Guardar");
         limpiarButton = new JButton("Limpiar");
         retrocederButton = new JButton("Retroceder");
@@ -86,50 +71,32 @@ public class PacienteAgregar extends JFrame {
 
         setContentPane(mainPanel);
         setTitle("Registrar Paciente");
-        setSize(500, 400);
+        setSize(600, 400);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
 
-    // Métodos para acceder a los campos desde el controlador
-    public JTextField getNombreField() {
-        return nombreField;
+    private void agregarCampo(JPanel panel, GridBagConstraints gbc, int y, String etiqueta, JTextField campo, JLabel asterisco, Font font) {
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        panel.add(new JLabel(etiqueta), gbc);
+
+        gbc.gridx = 1;
+        campo.setFont(font);
+        campo.setPreferredSize(new Dimension(200, 25));
+        campo.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        panel.add(campo, gbc);
+
+        if (asterisco != null) {
+            gbc.gridx = 2;
+            panel.add(asterisco, gbc);
+        }
     }
 
-    public JTextField getApellidosField() {
-        return apellidosField;
-    }
-
-    public JTextField getDniField() {
-        return dniField;
-    }
-
-    public JTextField getTelefonoField() {
-        return telefonoField;
-    }
-
-    public JTextField getDireccionField() {
-        return direccionField;
-    }
-
-    public JTextField getCodPostalField() {
-        return codPostalField;
-    }
-
-    public JTextField getEmailField() {
-        return emailField;
-    }
-
-    public JLabel getDniAsterisk() {
-        return dniAsterisk;
-    }
-
-    public JLabel getTelefonoAsterisk() {
-        return telefonoAsterisk;
-    }
-
-    public JLabel getEmailAsterisk() {
-        return emailAsterisk;
+    private JLabel crearAsterisco() {
+        JLabel asterisk = new JLabel("*");
+        asterisk.setForeground(Color.RED);
+        return asterisk;
     }
 
     // Métodos para agregar los listeners de los botones
@@ -155,4 +122,16 @@ public class PacienteAgregar extends JFrame {
         codPostalField.setText("");
         emailField.setText("");
     }
+
+    // Getters para acceder a los campos desde el controlador
+    public JTextField getNombreField() { return nombreField; }
+    public JTextField getApellidosField() { return apellidosField; }
+    public JTextField getDniField() { return dniField; }
+    public JTextField getTelefonoField() { return telefonoField; }
+    public JTextField getDireccionField() { return direccionField; }
+    public JTextField getCodPostalField() { return codPostalField; }
+    public JTextField getEmailField() { return emailField; }
+    public JLabel getDniAsterisk() { return dniAsterisk; }
+    public JLabel getTelefonoAsterisk() { return telefonoAsterisk; }
+    public JLabel getEmailAsterisk() { return emailAsterisk; }
 }

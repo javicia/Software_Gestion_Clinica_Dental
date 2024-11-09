@@ -8,13 +8,28 @@ public class Paciente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_paciente")
     private int id_paciente;
+
+    @Column(name = "nombre", nullable = false)
     private String nombre;
+
+    @Column(name = "apellidos", nullable = false)
     private String apellidos;
+
+    @Column(name = "dni", unique = true, nullable = false)
     private String dni;
+
+    @Column(name = "telefono")
     private String telefono;
+
+    @Column(name = "direccion")
     private String direccion;
+
+    @Column(name = "cod_postal")
     private Integer codPostal;
+
+    @Column(name = "email", unique = true)
     private String email;
 
 
@@ -84,5 +99,10 @@ public class Paciente {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return apellidos + ", " + nombre;
     }
 }

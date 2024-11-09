@@ -52,20 +52,30 @@ public class PacienteDao {
         }
     }
 
-
-    public Paciente getIdPaciente(int id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Paciente.class, id);
-        }
-    }
-
     public List<Paciente> obtenerTodos() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from Paciente", Paciente.class).list();
         }
     }
 
-    public List<Paciente> findPacienteByName(String name) {
+    public Paciente findByName(String fullName) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // Divide el nombre completo en nombre y apellidos
+            String[] parts = fullName.split(", ");
+            if (parts.length < 2) {
+                // Si no hay suficientes partes para nombre y apellidos, retorna null
+                return null;
+            }
+            String lastName = parts[0].trim();
+            String firstName = parts[1].trim();
+
+            return session.createQuery("FROM Paciente WHERE lower(trim(apellidos)) = :lastName AND lower(trim(nombre)) = :firstName", Paciente.class)
+                    .setParameter("lastName", lastName.toLowerCase())
+                    .setParameter("firstName", firstName.toLowerCase())
+                    .uniqueResult();
+        }
+    }
+    public List<Paciente> findListPacienteByName(String name) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from Paciente where nombre = :name", Paciente.class)
                     .setParameter("name", name)

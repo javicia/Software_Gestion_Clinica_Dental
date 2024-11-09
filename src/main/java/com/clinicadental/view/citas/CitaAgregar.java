@@ -1,5 +1,7 @@
 package com.clinicadental.view.citas;
 
+import com.clinicadental.model.Entity.Doctor;
+import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.utils.CalendarUtils;
 import com.clinicadental.utils.DateUtils;
 
@@ -13,39 +15,42 @@ import java.util.Objects;
 public class CitaAgregar extends JFrame {
     private JTextField fechaField;
     private JTextField horaField;
-    private JComboBox<String> pacienteField;
-    private JComboBox<String> doctorField;
+    private JComboBox<Paciente> pacienteField;
+    private JComboBox<Doctor> doctorField;
     private JTextArea motivoField;
     private JButton guardarButton;
     private JButton limpiarButton;
     private JButton retrocederButton;
     private JPanel mainPanel;
 
-    // Asteriscos rojos para los campos validados
     private JLabel horaAsterisk;
     private JLabel fechaAsterisk;
     private JLabel pacienteAsterisk;
     private JLabel doctorAsterisk;
 
-    public CitaAgregar(List<String> pacientesOrdenados, List<String> doctoresOrdenados) { // Recibe lista de pacientes y doctores
+    public CitaAgregar(List<Paciente> pacientesOrdenados, List<Doctor> doctoresOrdenados) {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel formPanel = new JPanel(new GridLayout(5, 3, 10, 10));
+        JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createTitledBorder("Registrar Cita"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         Font smallFont = new Font("Arial", Font.PLAIN, 12);
 
-        // Fecha con selector de calendario
-        formPanel.add(new JLabel("Fecha:"));
-        JPanel fechaPanel = new JPanel(new BorderLayout());
+        // Configuración de fecha
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(new JLabel("Fecha:"), gbc);
 
         fechaField = new JTextField(20);
         configurarCampoUniforme(fechaField, smallFont);
+        JPanel fechaPanel = new JPanel(new BorderLayout());
         fechaPanel.add(fechaField, BorderLayout.CENTER);
 
-        // Icono del calendario
         ImageIcon calendarIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/calendar.png")));
         Image scaledImage = calendarIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         calendarIcon = new ImageIcon(scaledImage);
@@ -54,7 +59,6 @@ public class CitaAgregar extends JFrame {
         calendarioLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         calendarioLabel.setToolTipText("Seleccionar fecha");
 
-        // Mostrar el JCalendar en un JDialog al hacer clic en el icono
         calendarioLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -62,26 +66,33 @@ public class CitaAgregar extends JFrame {
             }
         });
 
+        // Agregar espacio entre el JTextField y el icono
         JPanel iconPanelFecha = new JPanel(new BorderLayout());
-        iconPanelFecha.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        iconPanelFecha.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));  // Ajuste de espacio
         iconPanelFecha.add(calendarioLabel, BorderLayout.CENTER);
 
         fechaPanel.add(iconPanelFecha, BorderLayout.EAST);
-        formPanel.add(fechaPanel);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        formPanel.add(fechaPanel, gbc);
 
         fechaAsterisk = new JLabel("*");
         fechaAsterisk.setForeground(Color.BLACK);
-        formPanel.add(fechaAsterisk);
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        formPanel.add(fechaAsterisk, gbc);
 
-        // Hora con selector de reloj
-        formPanel.add(new JLabel("Hora:"));
-        JPanel horaPanel = new JPanel(new BorderLayout());
+        // Configuración de hora
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(new JLabel("Hora:"), gbc);
 
         horaField = new JTextField(20);
         configurarCampoUniforme(horaField, smallFont);
+        JPanel horaPanel = new JPanel(new BorderLayout());
         horaPanel.add(horaField, BorderLayout.CENTER);
 
-        // Icono del reloj
         ImageIcon clockIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/our.png")));
         Image scaledClockImage = clockIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         clockIcon = new ImageIcon(scaledClockImage);
@@ -90,7 +101,6 @@ public class CitaAgregar extends JFrame {
         relojLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         relojLabel.setToolTipText("Seleccionar hora");
 
-        // Mostrar el selector de reloj en un JDialog al hacer clic en el icono
         relojLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -98,47 +108,84 @@ public class CitaAgregar extends JFrame {
             }
         });
 
+        // Agregar espacio entre el JTextField y el icono
         JPanel iconPanelHora = new JPanel(new BorderLayout());
-        iconPanelHora.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        iconPanelHora.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));  // Ajuste de espacio
         iconPanelHora.add(relojLabel, BorderLayout.CENTER);
 
         horaPanel.add(iconPanelHora, BorderLayout.EAST);
-        formPanel.add(horaPanel);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        formPanel.add(horaPanel, gbc);
 
         horaAsterisk = new JLabel("*");
         horaAsterisk.setForeground(Color.BLACK);
-        formPanel.add(horaAsterisk);
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        formPanel.add(horaAsterisk, gbc);
 
-        // Campo de Paciente como JComboBox (no editable)
-        formPanel.add(new JLabel("Paciente:"));
-        pacienteField = new JComboBox<>(pacientesOrdenados.toArray(new String[0]));
+        // Configuración de JComboBox para pacientes
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(new JLabel("Paciente:"), gbc);
+
+        pacienteField = new JComboBox<>();
+        for (Paciente paciente : pacientesOrdenados) {
+            pacienteField.addItem(paciente);
+        }
         pacienteField.setFont(smallFont);
-        pacienteField.setEditable(false);  // Desactivar edición
-        formPanel.add(pacienteField);
+        pacienteField.setEditable(false);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        formPanel.add(pacienteField, gbc);
+
         pacienteAsterisk = new JLabel("*");
         pacienteAsterisk.setForeground(Color.BLACK);
-        formPanel.add(pacienteAsterisk);
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        formPanel.add(pacienteAsterisk, gbc);
 
-        // Campo de Doctor como JComboBox (no editable)
-        formPanel.add(new JLabel("Doctor:"));
-        doctorField = new JComboBox<>(doctoresOrdenados.toArray(new String[0]));
+        // Configuración de JComboBox para doctores
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(new JLabel("Doctor:"), gbc);
+
+        doctorField = new JComboBox<>();
+        for (Doctor doctor : doctoresOrdenados) {
+            doctorField.addItem(doctor);
+        }
         doctorField.setFont(smallFont);
-        doctorField.setEditable(false);  // Desactivar edición
-        formPanel.add(doctorField);
+        doctorField.setEditable(false);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        formPanel.add(doctorField, gbc);
+
         doctorAsterisk = new JLabel("*");
         doctorAsterisk.setForeground(Color.BLACK);
-        formPanel.add(doctorAsterisk);
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        formPanel.add(doctorAsterisk, gbc);
 
-        formPanel.add(new JLabel("Motivo:"));
+        // Configuración del campo de motivo más ancho y largo
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        formPanel.add(new JLabel("Motivo:"), gbc);
+
         motivoField = new JTextArea(5, 30);
         motivoField.setLineWrap(true);
         motivoField.setWrapStyleWord(true);
         configurarCampoArea(motivoField, smallFont);
 
         JScrollPane scrollPane = new JScrollPane(motivoField);
-        scrollPane.setPreferredSize(new Dimension(400, 100));
-        formPanel.add(scrollPane);
-        formPanel.add(new JLabel());
+        scrollPane.setPreferredSize(new Dimension(400, 150));
+
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        formPanel.add(scrollPane, gbc);
 
         JPanel buttonPanel = new JPanel();
         guardarButton = new JButton("Guardar");
@@ -154,7 +201,7 @@ public class CitaAgregar extends JFrame {
 
         setContentPane(mainPanel);
         setTitle("Registrar Cita");
-        setSize(500, 400);
+        setSize(600, 500);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
@@ -163,30 +210,26 @@ public class CitaAgregar extends JFrame {
         return DateUtils.parseFecha(fechaField.getText());
     }
 
-    // Método para configurar cada JTextField con altura uniforme
     private void configurarCampoUniforme(JTextField textField, Font font) {
         textField.setFont(font);
         textField.setPreferredSize(new Dimension(200, 25));
         textField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
 
-    // Método para configurar el JTextArea de motivoField
     private void configurarCampoArea(JTextArea textArea, Font font) {
         textArea.setFont(font);
         textArea.setMargin(new Insets(5, 5, 5, 5));
         textArea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
 
-    // Método para limpiar los campos del formulario y restablecer los asteriscos a negro
     public void limpiarCampos() {
         fechaField.setText("");
         horaField.setText("");
-        pacienteField.setSelectedIndex(-1); // Restablecer JComboBox
-        doctorField.setSelectedIndex(-1);   // Restablecer JComboBox
+        pacienteField.setSelectedIndex(-1);
+        doctorField.setSelectedIndex(-1);
         motivoField.setText("");
     }
 
-    // Métodos para agregar los listeners de los botones
     public void addGuardarButtonListener(ActionListener listener) {
         guardarButton.addActionListener(listener);
     }
@@ -199,11 +242,10 @@ public class CitaAgregar extends JFrame {
         retrocederButton.addActionListener(listener);
     }
 
-    // Getters y Setters
     public JTextField getFechaField() { return fechaField; }
     public JTextField getHoraField() { return horaField; }
-    public JComboBox<String> getPacienteField() { return pacienteField; }
-    public JComboBox<String> getDoctorField() { return doctorField; }
+    public JComboBox<Paciente> getPacienteField() { return pacienteField; }
+    public JComboBox<Doctor> getDoctorField() { return doctorField; }
     public JTextArea getMotivoField() { return motivoField; }
     public JLabel getHoraAsterisk() { return horaAsterisk; }
     public JLabel getFechaAsterisk() { return fechaAsterisk; }

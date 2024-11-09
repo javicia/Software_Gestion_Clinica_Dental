@@ -2,17 +2,21 @@ package com.clinicadental.controller.citas;
 
 import com.clinicadental.model.Entity.Cita;
 import com.clinicadental.service.ICitasService;
+import com.clinicadental.service.IDoctorService;
+import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.CitasServiceImpl;
 import com.clinicadental.view.citas.CitaDetails;
+import com.clinicadental.view.citas.CitaEditar;
 import com.clinicadental.view.citas.GestionCita;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CitaDetailsController {
     private ICitasService citaService;
+    private IPacienteService pacienteService;
+    private IDoctorService doctorService;
     private GestionCita citaTable;
 
     public CitaDetailsController(GestionCita citaTableView) {
@@ -33,33 +37,32 @@ public class CitaDetailsController {
         });
     }
 
-    // Método para mostrar los detalles de la cita seleccionada
     private void mostrarDetallesCita(int selectedRow) {
         Cita cita = obtenerCitaDesdeTabla(selectedRow);
         if (cita != null) {
-            // Concatenamos nombre y apellidos para el paciente y el doctor
-            String nombreCompletoPaciente = cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellidos();
-            String nombreCompletoDoctor = cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellidos();
+            String nombreCompletoPaciente = cita.getPaciente().toString();
+            String nombreCompletoDoctor = cita.getDoctor().toString();
 
-            // Creamos el diálogo con los detalles de la cita
+            // Almacena los nombres completos en variables del diálogo
             CitaDetails detailsDialog = new CitaDetails(
                     citaTable,
                     cita.getFecha(),
                     cita.getHora(),
-                    nombreCompletoPaciente, // Pasamos el nombre completo del paciente
-                    nombreCompletoDoctor,   // Pasamos el nombre completo del doctor
+                    nombreCompletoPaciente,
+                    nombreCompletoDoctor,
                     cita.getMotivo()
             );
 
-            // Mostrar el diálogo de detalles
+            // Define acciones de los botones sin alterar los nombres completos
+            detailsDialog.addDeleteListener(e -> mostrarConfirmDialog(cita, detailsDialog));
+            detailsDialog.addEditListener(e -> editarCita(cita, detailsDialog));
+
             detailsDialog.setVisible(true);
         } else {
             System.out.println("No se pudo obtener los detalles de la cita.");
         }
     }
 
-
-    // Método para mostrar el cuadro de diálogo de confirmación
     private void mostrarConfirmDialog(Cita cita, CitaDetails detailsDialog) {
         int confirm = JOptionPane.showConfirmDialog(
                 detailsDialog,
@@ -73,25 +76,37 @@ public class CitaDetailsController {
         }
     }
 
-    // Método para eliminar la cita de la base de datos y actualizar la tabla
     private void eliminarCita(Cita cita, CitaDetails detailsDialog) {
-        // Eliminar la cita de la base de datos
-        citaService.deleteCita(cita); // Llama al método del servicio para eliminar la cita
-
-        // Actualiza la tabla de citas
-        List<Cita> citasActualizadas = citaService.getAllCitas(); // Obtiene la lista actualizada de citas
-        citaTable.setCitasData(citasActualizadas); // Actualiza el modelo de la tabla en la vista
-
-        // Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(null, "Cita eliminada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-        // Cerrar el diálogo de detalles
-        detailsDialog.cerrarDialogo();
+        citaService.deleteCita(cita);
+        actualizarTablaCitas();
+        JOptionPane.showMessageDialog(detailsDialog, "Cita eliminada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        detailsDialog.cerrarDialogo(); // Asegura que solo aquí se cierre el diálogo al eliminar
     }
 
-    // Método para obtener la cita desde la tabla usando el id_cita
+    private void editarCita(Cita cita, CitaDetails detailsDialog) {
+        detailsDialog.dispose(); // Cierra el diálogo de detalles antes de abrir edición
+
+        // Obtener listas de nombres de pacientes y doctores
+        List<String> nombresPacientes = pacienteService.obtenerTodos().stream()
+                .map(paciente -> paciente.getNombre() + " " + paciente.getApellidos())
+                .collect(Collectors.toList());
+        List<String> nombresDoctores = doctorService.getAllDoctor().stream()
+                .map(doctor -> doctor.getNombre() + " " + doctor.getApellidos())
+                .collect(Collectors.toList());
+
+        // Crear el formulario de edición con las listas de nombres
+        CitaEditar citaEditarForm = new CitaEditar(nombresPacientes, nombresDoctores);
+        new CitaEditarController(cita, citaEditarForm, citaTable);
+        citaEditarForm.setVisible(true);
+    }
+
+    private void actualizarTablaCitas() {
+        List<Cita> citasActualizadas = citaService.getAllCitas();
+        citaTable.setCitasData(citasActualizadas);
+    }
+
     private Cita obtenerCitaDesdeTabla(int rowIndex) {
-        int idCita = (int) citaTable.getCitaTable().getValueAt(rowIndex, 0); // Obtener id_cita desde la primera columna
+        int idCita = (int) citaTable.getCitaTable().getValueAt(rowIndex, 0);
         return citaService.getAllCitas().stream()
                 .filter(c -> c.getId_cita() == idCita)
                 .findFirst()

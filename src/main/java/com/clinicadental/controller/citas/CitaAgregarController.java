@@ -9,12 +9,14 @@ import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.CitasServiceImpl;
 import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.service.impl.PacienteServiceImpl;
+import com.clinicadental.utils.DateUtils;
 import com.clinicadental.utils.ValidatorUtil;
 import com.clinicadental.view.citas.CitaAgregar;
 import com.clinicadental.view.citas.GestionCita;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,11 +26,15 @@ public class CitaAgregarController {
     private ICitasService citasService;
     private CitaAgregar citaForm;
     private GestionCita citaTable;
+    private IDoctorService doctorService;
+    private IPacienteService pacienteService;
 
     public CitaAgregarController(CitaAgregar citaForm, GestionCita citaTable) {
         this.citaForm = citaForm;
         this.citaTable = citaTable;
         this.citasService = new CitasServiceImpl();
+        this.doctorService = new DoctorServiceImpl();
+        this.pacienteService = new PacienteServiceImpl();
 
         // Configurar los eventos de los botones en el controlador
         this.citaForm.addGuardarButtonListener(new GuardarCitaListener());
@@ -43,8 +49,6 @@ public class CitaAgregarController {
             Date fecha = citaForm.getFechaSeleccionada();
             String horaTexto = citaForm.getHoraField().getText();
             String motivo = citaForm.getMotivoField().getText();
-            String pacienteTexto = (String) citaForm.getPacienteField().getSelectedItem(); // Obtener paciente seleccionado
-            String doctorTexto = (String) citaForm.getDoctorField().getSelectedItem();
 
             resetFieldStyles();
             boolean isValid = true;
@@ -60,40 +64,38 @@ public class CitaAgregarController {
                 isValid = false;
             }
 
-            // Asumimos que `pacienteTexto` y `doctorTexto` son válidos, ya que solo pueden ser seleccionados de las listas disponibles
-
             if (!isValid) {
                 JOptionPane.showMessageDialog(citaForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Crear y guardar la cita
+            // Obtener el objeto seleccionado del JComboBox en lugar de buscar por nombre
+            Paciente paciente = (Paciente) citaForm.getPacienteField().getSelectedItem();
+            Doctor doctor = (Doctor) citaForm.getDoctorField().getSelectedItem();
+
+            if (doctor == null || paciente == null) {
+                JOptionPane.showMessageDialog(citaForm, "Seleccione un doctor y un paciente válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Crear y guardar la cita con el doctor y paciente seleccionados
             Cita cita = new Cita();
             cita.setFecha(fecha);
             cita.setHora(hora);
             cita.setMotivo(motivo);
-
-            // Crear el objeto Paciente y establecer su nombre
-            Paciente paciente = new Paciente();
-            paciente.setNombre(pacienteTexto); // Usa el método setter para el nombre
+            cita.setDoctor(doctor);
             cita.setPaciente(paciente);
 
-            // Crear el objeto Doctor y establecer su nombre
-            Doctor doctor = new Doctor();
-            doctor.setNombre(doctorTexto); // Usa el método setter para el nombre
-            cita.setDoctor(doctor);
-
             citasService.saveCita(cita);
-
             citaTable.actualizarTabla();
+
             JOptionPane.showMessageDialog(citaForm, "Cita guardada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             citaForm.limpiarCampos();
-            citaTable.setCitasData(citasService.getAllCitas());
-
             citaForm.dispose();
         }
     }
+
 
     private void marcarCampoInvalido(JComponent field, JLabel asterisk) {
         field.setBorder(new LineBorder(Color.RED, 2));

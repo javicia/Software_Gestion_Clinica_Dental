@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Date;
 
-public class CitaDetails extends JFrame {
+public class CitaDetails extends JDialog {
     private JPanel contentPane;
     private JLabel fechaLabel;
     private JLabel horaLabel;
@@ -17,28 +17,25 @@ public class CitaDetails extends JFrame {
     private JButton deleteButton;
 
     public CitaDetails(JFrame parent, Date fecha, Date hora, String paciente, String doctor, String motivo) {
-        super("Detalles de las Citas");
+        super(parent, "Detalles de las Citas", true);
 
-        // Configurar el tamaño del JFrame para que coincida con MainScreen
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Se asegura de cerrar al llamar dispose()
+
         setSize(800, 600);
-        setLocationRelativeTo(parent);  // Centrar la ventana en la pantalla
+        setLocationRelativeTo(parent);
 
-        contentPane = new JPanel(new GridLayout(10, 2));  // Usar GridLayout para organizar los elementos
+        contentPane = new JPanel(new GridLayout(10, 2));
 
-        // Inicializar etiquetas con los valores
         fechaLabel = new JLabel(fecha.toString());
         horaLabel = new JLabel(hora.toString());
         pacienteLabel = new JLabel(paciente);
         doctorLabel = new JLabel(doctor);
         motivoLabel = new JLabel(motivo);
 
-
-        // Inicializar botones
         buttonOK = new JButton("OK");
         editButton = new JButton("Editar");
         deleteButton = new JButton("Eliminar");
 
-        // Añadir componentes al panel
         contentPane.add(new JLabel("Fecha:"));
         contentPane.add(fechaLabel);
         contentPane.add(new JLabel("Hora:"));
@@ -50,19 +47,15 @@ public class CitaDetails extends JFrame {
         contentPane.add(new JLabel("Motivo:"));
         contentPane.add(motivoLabel);
 
-
-        // Añadir botones
         contentPane.add(buttonOK);
         contentPane.add(editButton);
         contentPane.add(deleteButton);
 
-        setContentPane(contentPane);  // Establecer el panel como el contenido de la ventana
+        setContentPane(contentPane);
 
-        // Acción para cerrar la ventana al presionar "OK"
-        buttonOK.addActionListener(e -> dispose());
+        buttonOK.addActionListener(e -> dispose()); // Solo llamamos a dispose()
     }
 
-    // Métodos para agregar listeners a los botones
     public void addEditListener(ActionListener listener) {
         editButton.addActionListener(listener);
     }

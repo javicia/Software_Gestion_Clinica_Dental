@@ -4,10 +4,12 @@ import javax.swing.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateUtils {
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    // Formatos de fecha y hora con Locale en español
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("es-ES"));
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("es-ES"));
 
     // Método para formatear fechas
     public static String formatFecha(Date date) {
@@ -29,7 +31,7 @@ public class DateUtils {
     }
 
     // Clase interna para formatear la fecha seleccionada en el JDatePicker
-    private static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
+    public static class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
         @Override
         public Object stringToValue(String text) throws ParseException {
             return dateFormat.parse(text);
