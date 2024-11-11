@@ -1,5 +1,6 @@
 package com.clinicadental.view.citas;
 
+import com.clinicadental.common.Constan;
 import com.clinicadental.controller.citas.CitaAgregarController;
 import com.clinicadental.model.Entity.Cita;
 import com.clinicadental.model.Entity.Doctor;
@@ -55,6 +56,9 @@ public class GestionCita extends JFrame {
 
         citaTable.getColumnModel().getColumn(0).setMinWidth(0);
         citaTable.getColumnModel().getColumn(0).setMaxWidth(0); // Ocultar la columna de ID
+
+        // Establecer el icono de la aplicación
+        setIconImage(new ImageIcon(getClass().getResource(Constan.ICON_LOGO_IMAGE_PATH)).getImage());
 
         JScrollPane scrollPane = new JScrollPane(citaTable);
 

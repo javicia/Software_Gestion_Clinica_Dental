@@ -1,5 +1,6 @@
 package com.clinicadental.view.paciente;
 
+import com.clinicadental.common.Constan;
 import com.clinicadental.controller.paciente.PacienteAgregarController;
 import com.clinicadental.controller.paciente.PacienteEditarController;
 import com.clinicadental.model.Entity.Paciente;
@@ -38,6 +39,9 @@ public class GestionPaciente extends JFrame {
                 new Font("Arial", Font.BOLD, 18),
                 Color.BLACK
         ));
+
+        // Establecer el icono de la aplicación
+        setIconImage(new ImageIcon(getClass().getResource(Constan.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Crear la tabla
         tableModel = new DefaultTableModel(new String[]{"Nombre", "Apellidos", "DNI", "Teléfono", "Dirección", "Código Postal", "Email"}, 0);
