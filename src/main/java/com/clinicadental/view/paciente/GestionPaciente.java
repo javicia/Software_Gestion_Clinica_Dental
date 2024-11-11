@@ -1,6 +1,8 @@
 package com.clinicadental.view.paciente;
 
-import com.clinicadental.common.Constan;
+import com.clinicadental.common.Constans;
+import com.clinicadental.common.design.GradientDesign;
+import com.clinicadental.common.design.ButtonDesign;
 import com.clinicadental.controller.paciente.PacienteAgregarController;
 import com.clinicadental.controller.paciente.PacienteEditarController;
 import com.clinicadental.model.Entity.Paciente;
@@ -11,8 +13,6 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -23,14 +23,20 @@ public class GestionPaciente extends JFrame {
     private JTextField[] filterFields;
     private JButton backButton;
     private JButton addButton;
-    private JPanel mainPanel;
 
     public GestionPaciente() {
-        // Configuración de la ventana principal
-        mainPanel = new JPanel(new BorderLayout());
+        setupUI();
+        actualizarTabla();
+    }
 
-        // Crear un panel con título para la tabla
+    private void setupUI() {
+        // Panel principal con fondo degradado
+        GradientDesign mainPanel = new GradientDesign(new Color(0, 102, 204), new Color(153, 204, 255));
+        mainPanel.setLayout(new BorderLayout());
+
+        // Panel con título para la tabla
         JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setOpaque(false);
         tablePanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(),
                 "Listado de Pacientes",
@@ -41,16 +47,17 @@ public class GestionPaciente extends JFrame {
         ));
 
         // Establecer el icono de la aplicación
-        setIconImage(new ImageIcon(getClass().getResource(Constan.ICON_LOGO_IMAGE_PATH)).getImage());
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Crear la tabla
-        tableModel = new DefaultTableModel(new String[]{"Nombre", "Apellidos", "DNI", "Teléfono", "Dirección", "Código Postal", "Email"}, 0);
-        pacienteTable = new JTable(tableModel) {
+        tableModel = new DefaultTableModel(new String[]{"Nombre", "Apellidos", "DNI", "Teléfono", "Dirección", "Código Postal", "Email"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Desactivar la edición de las celdas
             }
         };
+
+        pacienteTable = new JTable(tableModel);
         pacienteTable.setFont(new Font("Arial", Font.PLAIN, 14));
         pacienteTable.setRowHeight(30);
         pacienteTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
@@ -64,71 +71,62 @@ public class GestionPaciente extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {  // Detectar doble clic
                     int selectedRow = pacienteTable.getSelectedRow();
-                    if (selectedRow != -1) {  // Si hay una fila seleccionada
-                        abrirDetallesPaciente(selectedRow);  // Llamar al método para abrir los detalles del paciente
+                    if (selectedRow != -1) {
+                        abrirDetallesPaciente(selectedRow);
                     }
                 }
             }
         });
-        JScrollPane scrollPane = new JScrollPane(pacienteTable);
 
-        // Panel de filtros debajo de la cabecera
-        JPanel filterPanel = new JPanel(new GridLayout(1, 7));  // 7 columnas para los filtros
+        JScrollPane scrollPane = new JScrollPane(pacienteTable);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+
+        // Configuración del panel de filtros
         filterFields = new JTextField[7];
+        JPanel filterPanel = new JPanel(new GridLayout(1, 7));
+        filterPanel.setOpaque(false);
         for (int i = 0; i < filterFields.length; i++) {
             filterFields[i] = new JTextField();
             filterPanel.add(filterFields[i]);
         }
 
-        // Añadir los filtros y la tabla al panel con scroll
-        tablePanel.add(filterPanel, BorderLayout.NORTH);
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        // Configuración de los botones "Añadir Paciente" y "Volver"
+        addButton = new ButtonDesign("Añadir Paciente");
+        addButton.addActionListener(e -> abrirPacienteForm());
 
-        // Botón para volver
-        backButton = new JButton("Volver");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();  // Cerrar el JFrame actual
-            }
-        });
+        backButton = new ButtonDesign("Volver");
+        backButton.addActionListener(e -> dispose());
 
-
-        // Botón para añadir nuevo paciente
-        addButton = new JButton("Añadir Paciente");
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirPacienteForm();  // Llamar al método para abrir el formulario de añadir paciente
-            }
-        });
-
-        // Panel de botones (volver y añadir)
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
         buttonPanel.add(addButton);
         buttonPanel.add(backButton);
 
-        // Añadir el panel de la tabla y los botones al mainPanel
+        // Añadir filtros y scrollPane al panel de la tabla
+        tablePanel.add(filterPanel, BorderLayout.NORTH);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Añadir los componentes al panel principal
         mainPanel.add(tablePanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
         setTitle("Gestión de Pacientes");
         setSize(800, 600);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
     }
 
     // Método para abrir el formulario de añadir paciente
     private void abrirPacienteForm() {
         PacienteAgregar pacienteForm = new PacienteAgregar();
-        new PacienteAgregarController(pacienteForm, this); // Pasar la referencia de PacienteTable para actualizar la tabla
-        pacienteForm.setVisible(true);  // Asegurarse de que el formulario sea visible
+        new PacienteAgregarController(pacienteForm, this);
+        pacienteForm.setVisible(true);
     }
 
     // Método para abrir detalles del paciente seleccionado
     private void abrirDetallesPaciente(int rowIndex) {
-        // Obtener los datos de la fila seleccionada, manejando valores null
         String nombre = pacienteTable.getValueAt(rowIndex, 0) != null ? pacienteTable.getValueAt(rowIndex, 0).toString() : "N/A";
         String apellidos = pacienteTable.getValueAt(rowIndex, 1) != null ? pacienteTable.getValueAt(rowIndex, 1).toString() : "N/A";
         String dni = pacienteTable.getValueAt(rowIndex, 2) != null ? pacienteTable.getValueAt(rowIndex, 2).toString() : "N/A";
@@ -137,22 +135,19 @@ public class GestionPaciente extends JFrame {
         String codPostal = pacienteTable.getValueAt(rowIndex, 5) != null ? pacienteTable.getValueAt(rowIndex, 5).toString() : "N/A";
         String email = pacienteTable.getValueAt(rowIndex, 6) != null ? pacienteTable.getValueAt(rowIndex, 6).toString() : "N/A";
 
-        // Abrir la ventana de detalles
         PacienteDetails detallesDialog = new PacienteDetails(this, nombre, apellidos, dni, telefono, direccion, codPostal, email);
-        // Agregar listener para el botón de eliminar
         detallesDialog.addDeleteListener(e -> {
-        // Lógica para eliminar el registro de la base de datos
-        eliminarPaciente(dni); // Método que debes implementar para eliminar de la BD
-        detallesDialog.cerrarDialogo(); // Cierra el diálogo de detalles
-        actualizarTabla(); // Método que debes implementar para refrescar la tabla
-    });
-        // Agregar listener para el botón de editar
+            eliminarPaciente(dni);
+            detallesDialog.cerrarDialogo();
+            actualizarTabla();
+        });
         detallesDialog.addEditListener(e -> {
-            editarPaciente(dni); // Pasar el dni del paciente o el objeto Paciente
-            detallesDialog.cerrarDialogo(); // Cerrar el diálogo de detalles
+            editarPaciente(dni);
+            detallesDialog.cerrarDialogo();
         });
         detallesDialog.setVisible(true);
-}
+    }
+
     private void editarPaciente(String dni) {
         IPacienteService pacienteService = new PacienteServiceImpl();
         Paciente paciente = pacienteService.obtenerTodos().stream()
@@ -161,7 +156,7 @@ public class GestionPaciente extends JFrame {
                 .orElse(null);
 
         if (paciente != null) {
-           PacienteEditar editarPacienteForm = new PacienteEditar();
+            PacienteEditar editarPacienteForm = new PacienteEditar();
             editarPacienteForm.getNombreField().setText(paciente.getNombre());
             editarPacienteForm.getApellidosField().setText(paciente.getApellidos());
             editarPacienteForm.getDniField().setText(paciente.getDni());
@@ -170,31 +165,22 @@ public class GestionPaciente extends JFrame {
             editarPacienteForm.getCodPostalField().setText(String.valueOf(paciente.getCodPostal()));
             editarPacienteForm.getEmailField().setText(paciente.getEmail());
 
-
-            // Crea el controlador con los tres argumentos
             new PacienteEditarController(paciente, editarPacienteForm, this);
-
-            editarPacienteForm.setVisible(true); // Mostrar el formulario de edición
+            editarPacienteForm.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo encontrar el paciente a editar.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    // Método para eliminar el doctor de la base de datos
-    private void eliminarPaciente(String dni) {
-        // Crear una instancia del servicio de doctor
-        IPacienteService pacienteService = new PacienteServiceImpl();
 
-        // Obtener el doctor usando el número de colegiado
+    private void eliminarPaciente(String dni) {
+        IPacienteService pacienteService = new PacienteServiceImpl();
         Paciente paciente = pacienteService.obtenerTodos().stream()
                 .filter(p -> p.getDni() != null && p.getDni().equals(dni))
                 .findFirst()
                 .orElse(null);
 
         if (paciente != null) {
-            // Llamar al método del servicio para eliminar el doctor
             pacienteService.deletePaciente(paciente);
-
-            // Actualizar la tabla después de la eliminación
             actualizarTabla();
             JOptionPane.showMessageDialog(this, "Paciente eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -202,17 +188,14 @@ public class GestionPaciente extends JFrame {
         }
     }
 
-
-    // Método para actualizar la tabla de doctores
     private void actualizarTabla() {
-        IPacienteService pacienteService = new PacienteServiceImpl(); // Crear una nueva instancia del servicio
-        List<Paciente> pacientes = pacienteService.obtenerTodos(); // Obtener la lista actualizada de doctores
-        setPacientesData(pacientes); // Llamar al método para llenar la tabla
+        IPacienteService pacienteService = new PacienteServiceImpl();
+        List<Paciente> pacientes = pacienteService.obtenerTodos();
+        setPacientesData(pacientes);
     }
 
-    // Método para llenar la tabla con la lista de pacientes
     public void setPacientesData(List<Paciente> pacientes) {
-        tableModel.setRowCount(0);  // Limpiar los datos actuales de la tabla
+        tableModel.setRowCount(0);
         for (Paciente paciente : pacientes) {
             Object[] row = {
                     paciente.getNombre(),
@@ -227,7 +210,6 @@ public class GestionPaciente extends JFrame {
         }
     }
 
-    // Método para obtener los campos de filtro
     public JTextField[] getFilterFields() {
         return filterFields;
     }

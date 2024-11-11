@@ -1,10 +1,10 @@
 package com.clinicadental.view.init;
 
-import com.clinicadental.common.Constan;
+import com.clinicadental.common.Constans;
 import com.clinicadental.controller.citas.GestionCitaController;
 import com.clinicadental.controller.doctor.GestionDoctorController;
 import com.clinicadental.controller.paciente.GestionPacienteController;
-import com.clinicadental.utils.BackgroundPanel;
+import com.clinicadental.common.design.BackgroundDesign;
 import com.clinicadental.view.citas.GestionCita;
 import com.clinicadental.view.doctor.GestionDoctor;
 import com.clinicadental.view.paciente.GestionPaciente;
@@ -26,10 +26,10 @@ public class MainScreen extends JFrame {
         setLocationRelativeTo(null);
 
         // Establecer el icono de la aplicación
-        setIconImage(new ImageIcon(getClass().getResource(Constan.ICON_LOGO_IMAGE_PATH)).getImage());
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Crear panel principal con imagen de fondo y ajuste de escala
-        BackgroundPanel panel = new BackgroundPanel(new ImageIcon(getClass().getResource(Constan.ICON_FONDO_IMAGE_PATH)).getImage());
+        BackgroundDesign panel = new BackgroundDesign(new ImageIcon(getClass().getResource(Constans.ICON_FONDO_IMAGE_PATH)).getImage());
 
         // Crear un panel para los botones con transparencia y diseño compacto
         JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 5, 5)) {
@@ -68,8 +68,8 @@ public class MainScreen extends JFrame {
 
     private JButton createCompactButton(String text) {
         // Redimensionar el icono a 20x20 píxeles
-        ImageIcon icon = new ImageIcon(new ImageIcon(getClass().getResource(Constan.ICON_LOGO_IMAGE_PATH))
-                .getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+        ImageIcon icon = new ImageIcon(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH))
+                .getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH));
 
         JButton button = new JButton(text, icon);
         button.setHorizontalTextPosition(SwingConstants.CENTER);

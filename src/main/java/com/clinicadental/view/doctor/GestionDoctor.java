@@ -1,6 +1,8 @@
 package com.clinicadental.view.doctor;
 
-import com.clinicadental.common.Constan;
+import com.clinicadental.common.Constans;
+import com.clinicadental.common.design.GradientDesign;
+import com.clinicadental.common.design.ButtonDesign;
 import com.clinicadental.controller.doctor.DoctorAgregarController;
 import com.clinicadental.controller.doctor.DoctorEditarController;
 import com.clinicadental.model.Entity.Doctor;
@@ -11,8 +13,6 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -27,7 +27,8 @@ public class GestionDoctor extends JFrame {
 
     public GestionDoctor() {
         // Configuración de la ventana principal
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new GradientDesign(new Color(0, 102, 204), new Color(153, 204, 255)); // Fondo degradado azul
+        mainPanel.setLayout(new BorderLayout());
 
         // Crear un panel con título para la tabla
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -39,9 +40,10 @@ public class GestionDoctor extends JFrame {
                 new Font("Arial", Font.BOLD, 18),
                 Color.BLACK
         ));
+        tablePanel.setOpaque(false);  // Transparente para ver el fondo degradado
 
         // Establecer el icono de la aplicación
-        setIconImage(new ImageIcon(getClass().getResource(Constan.ICON_LOGO_IMAGE_PATH)).getImage());
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Crear la tabla
         tableModel = new DefaultTableModel(new String[]{"Nombre", "Apellidos", "DNI", "Teléfono", "Dirección", "Código Postal", "Email", "NumColegiado"}, 0);
@@ -64,17 +66,20 @@ public class GestionDoctor extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {  // Detectar doble clic
                     int selectedRow = doctorTable.getSelectedRow();
-                    if (selectedRow != -1) {  // Si hay una fila seleccionada
-                        abrirDetallesDoctor(selectedRow);  // Llamar al método para abrir los detalles del doctor
+                    if (selectedRow != -1) {
+                        abrirDetallesDoctor(selectedRow);
                     }
                 }
             }
         });
 
         JScrollPane scrollPane = new JScrollPane(doctorTable);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
 
         // Panel de filtros debajo de la cabecera
-        JPanel filterPanel = new JPanel(new GridLayout(1, 8));  // 8 columnas para los filtros
+        JPanel filterPanel = new JPanel(new GridLayout(1, 8));
+        filterPanel.setOpaque(false);
         filterFields = new JTextField[8];
         for (int i = 0; i < filterFields.length; i++) {
             filterFields[i] = new JTextField();
@@ -86,25 +91,16 @@ public class GestionDoctor extends JFrame {
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
         // Botón para volver
-        backButton = new JButton("Volver");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();  // Cerrar el JFrame actual
-            }
-        });
+        backButton = new ButtonDesign("Volver");
+        backButton.addActionListener(e -> dispose());
 
         // Botón para añadir nuevo doctor
-        addButton = new JButton("Añadir Doctor");
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirDoctorForm();  // Llamar al método para abrir el formulario de añadir doctor
-            }
-        });
+        addButton = new ButtonDesign("Añadir Doctor");
+        addButton.addActionListener(e -> abrirDoctorForm());
 
-        // Panel de botones (volver y añadir)
+        // Panel de botones
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
         buttonPanel.add(addButton);
         buttonPanel.add(backButton);
 
@@ -118,7 +114,6 @@ public class GestionDoctor extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-
     // Método para abrir el formulario de añadir doctor
     private void abrirDoctorForm() {
         DoctorAgregar doctorForm = new DoctorAgregar();

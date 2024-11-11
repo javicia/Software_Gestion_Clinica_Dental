@@ -1,13 +1,13 @@
-package com.clinicadental.utils;
+package com.clinicadental.common.design;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class BackgroundPanel extends JPanel {
+public class BackgroundDesign extends JPanel {
 
     private final Image backgroundImage;
 
-    public BackgroundPanel(Image image) {
+    public BackgroundDesign(Image image) {
         this.backgroundImage = image;
         setLayout(new BorderLayout());
     }

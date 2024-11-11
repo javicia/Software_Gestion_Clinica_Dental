@@ -1,5 +1,7 @@
 package com.clinicadental.view.paciente;
 
+import com.clinicadental.common.design.ButtonDesign;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -21,50 +23,80 @@ public class PacienteDetails extends JFrame {
         super("Detalles del Paciente");
 
         // Configurar el tamaño del JFrame para que coincida con MainScreen
-        setSize(800, 600);
-        setLocationRelativeTo(parent);  // Centrar la ventana en la pantalla
+        setSize(600, 400);
+        setLocationRelativeTo(parent);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        contentPane = new JPanel(new GridLayout(9, 2));  // Usar GridLayout para organizar los elementos
+        // Configurar el panel principal con un borde y fondo gris claro
+        contentPane = new JPanel();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        contentPane.setBackground(new Color(240, 240, 240));
 
-        // Inicializar etiquetas con los valores
-        nombreLabel = new JLabel(nombre);
-        apellidosLabel = new JLabel(apellidos);
-        dniLabel = new JLabel(dni);
-        telefonoLabel = new JLabel(telefono);
-        direccionLabel = new JLabel(direccion);
-        codPostalLabel = new JLabel(codPostal);
-        emailLabel = new JLabel(email);
+        // Título superior
+        JLabel titleLabel = new JLabel("Detalles del Paciente", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(new Color(70, 130, 180));
+        contentPane.add(titleLabel, BorderLayout.NORTH);
 
-        // Inicializar botones
-        buttonOK = new JButton("OK");
-        editButton = new JButton("Editar");
-        deleteButton = new JButton("Eliminar");
+        // Panel central con detalles del paciente
+        JPanel detailsPanel = new JPanel(new GridLayout(7, 2, 10, 10));
+        detailsPanel.setOpaque(false);
 
-        // Añadir componentes al panel
-        contentPane.add(new JLabel("Nombre:"));
-        contentPane.add(nombreLabel);
-        contentPane.add(new JLabel("Apellidos:"));
-        contentPane.add(apellidosLabel);
-        contentPane.add(new JLabel("DNI:"));
-        contentPane.add(dniLabel);
-        contentPane.add(new JLabel("Teléfono:"));
-        contentPane.add(telefonoLabel);
-        contentPane.add(new JLabel("Dirección:"));
-        contentPane.add(direccionLabel);
-        contentPane.add(new JLabel("Código Postal:"));
-        contentPane.add(codPostalLabel);
-        contentPane.add(new JLabel("Email:"));
-        contentPane.add(emailLabel);
+        // Añadir etiquetas y valores de los detalles
+        detailsPanel.add(new JLabel("Nombre:"));
+        detailsPanel.add(nombreLabel = createValueLabel(nombre));
+        detailsPanel.add(new JLabel("Apellidos:"));
+        detailsPanel.add(apellidosLabel = createValueLabel(apellidos));
+        detailsPanel.add(new JLabel("DNI:"));
+        detailsPanel.add(dniLabel = createValueLabel(dni));
+        detailsPanel.add(new JLabel("Teléfono:"));
+        detailsPanel.add(telefonoLabel = createValueLabel(telefono));
+        detailsPanel.add(new JLabel("Dirección:"));
+        detailsPanel.add(direccionLabel = createValueLabel(direccion));
+        detailsPanel.add(new JLabel("Código Postal:"));
+        detailsPanel.add(codPostalLabel = createValueLabel(codPostal));
+        detailsPanel.add(new JLabel("Email:"));
+        detailsPanel.add(emailLabel = createValueLabel(email));
 
-        // Añadir botones
-        contentPane.add(buttonOK);
-        contentPane.add(editButton);
-        contentPane.add(deleteButton);
+        // Panel para botones de acción con estilo y espaciado
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
+        buttonOK = new ButtonDesign("Cerrar");
+        editButton = new ButtonDesign("Editar");
+        deleteButton = new ButtonDesign("Eliminar");
+        buttonPanel.add(buttonOK);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
 
-        setContentPane(contentPane);  // Establecer el panel como el contenido de la ventana
+        // Agregar componentes al panel principal
+        contentPane.add(detailsPanel, BorderLayout.CENTER);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        setContentPane(contentPane);
 
         // Acción para cerrar la ventana al presionar "OK"
         buttonOK.addActionListener(e -> dispose());
+    }
+
+    // Crear un JLabel estilizado para los valores de los detalles
+    private JLabel createValueLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.PLAIN, 16));
+        label.setForeground(new Color(50, 50, 50));
+        return label;
+    }
+
+    // Crear un botón estilizado para las acciones
+    private JButton createActionButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setFocusPainted(false);
+        button.setForeground(Color.WHITE);
+        button.setBackground(color);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setPreferredSize(new Dimension(100, 35));
+        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return button;
     }
 
     // Métodos para agregar listeners a los botones
