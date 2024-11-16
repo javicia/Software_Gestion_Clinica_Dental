@@ -1,6 +1,7 @@
 package com.clinicadental.controller.doctor;
 
 import com.clinicadental.model.Entity.Doctor;
+import com.clinicadental.service.ICitasService;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.view.doctor.DoctorDetails;
@@ -13,6 +14,7 @@ import java.util.List;
 
 public class DoctorDetailsController {
     private IDoctorService doctorService;
+    private ICitasService citaService;
     private GestionDoctor doctorTable;
 
     public DoctorDetailsController(GestionDoctor doctorTableView) {
@@ -79,19 +81,47 @@ public class DoctorDetailsController {
 
     // Método para eliminar el doctor de la base de datos y actualizar la tabla
     private void eliminarDoctor(Doctor doctor, DoctorDetails detailsDialog) {
-        // Eliminar el doctor de la base de datos
-        doctorService.deleteDoctor(doctor); // Llama al método del servicio para eliminar el doctor
+        try {
+            // Verificar si el doctor existe antes de intentar eliminar
+            if (doctor == null || doctor.getIdDoctor() == 0) {
+                JOptionPane.showMessageDialog(null, "El doctor no existe o no tiene un ID válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        // Actualiza la tabla de doctores
-        List<Doctor> doctoresActualizados = doctorService.getAllDoctor(); // Obtiene la lista actualizada de doctores
-        doctorTable.setDoctoresData(doctoresActualizados); // Actualiza el modelo de la tabla en la vista
+            // Eliminar citas asociadas al doctor
+            citaService.deleteCitasByDoctorId(doctor.getIdDoctor());
 
-        // Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(null, "Doctor eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            // Eliminar el doctor de la base de datos
+            doctorService.deleteDoctor(doctor);
 
-        // Cerrar el diálogo de detalles
-        detailsDialog.cerrarDialogo();
+            // Actualizar la tabla de doctores
+            actualizarTablaDoctores();
+
+            // Mostrar mensaje de éxito
+            JOptionPane.showMessageDialog(null, "Doctor eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            // Cerrar el diálogo de detalles
+            detailsDialog.cerrarDialogo();
+        } catch (Exception e) {
+            // Manejar errores y mostrar mensaje amigable al usuario
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Error al eliminar el doctor: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            e.printStackTrace(); // Depuración opcional para el desarrollador
+        }
     }
+
+
+
+    // Método para actualizar la tabla de doctores
+    private void actualizarTablaDoctores() {
+        List<Doctor> doctoresActualizados = doctorService.getAllDoctor(); // Obtiene la lista actualizada de doctores
+        doctorTable.setDoctoresData(doctoresActualizados); // Llama al método en la vista para actualizar la tabla
+    }
+
 
 
     private Doctor obtenerDoctorDesdeTabla(int rowIndex) {

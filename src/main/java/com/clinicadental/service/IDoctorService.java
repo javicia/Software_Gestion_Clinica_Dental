@@ -9,7 +9,6 @@ public interface IDoctorService {
     void saveDoctor(Doctor doctor);
     void updateDoctor(Doctor doctor);
     void deleteDoctor(Doctor doctor);
-    Doctor findByName(String name);
     List<Doctor> getAllDoctor();
     List<Doctor> findDoctorByName(String name);
 }

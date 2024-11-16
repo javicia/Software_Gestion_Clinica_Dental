@@ -1,6 +1,7 @@
 package com.clinicadental.controller.paciente;
 
 import com.clinicadental.model.Entity.Paciente;
+import com.clinicadental.service.ICitasService;
 import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.PacienteServiceImpl;
 import com.clinicadental.view.paciente.PacienteDetails;
@@ -12,6 +13,7 @@ import java.awt.event.ActionListener;
 
 public class PacienteDetailsController {
     private IPacienteService pacienteService;
+    private ICitasService citaService;
     private GestionPaciente pacienteTable;
 
     public PacienteDetailsController(GestionPaciente pacienteTableView) {
@@ -88,6 +90,8 @@ public class PacienteDetailsController {
     private void eliminarPaciente(Paciente paciente, PacienteDetails detailsDialog) {
         System.out.println("Eliminando paciente: " + paciente.getDni());
 
+        // Eliminar citas asociadas al doctor
+        citaService.deleteCitasByPacienteId(paciente.getId_paciente());
         // Eliminar paciente de la base de datos
         pacienteService.deletePaciente(paciente);
 

@@ -2,6 +2,8 @@ package com.clinicadental.model.Entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Doctores")
 public class Doctor {
@@ -34,6 +36,10 @@ public class Doctor {
 
     @Column(name = "email", unique = true)
     private String email;
+
+    // Relación con Cita
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cita> citas;
 
     // Getters y setters
 

@@ -34,4 +34,14 @@ public class CitasServiceImpl implements ICitasService {
     public Cita getCitaById(int id) {
         return citaDao.getCitaById(id);
     }
+
+    @Override
+    public void deleteCitasByDoctorId(int doctorId) {
+        citaDao.deleteCitasByDoctorId(doctorId);
+    }
+
+    @Override
+    public void deleteCitasByPacienteId(int pacienteId) {
+        citaDao.deleteCitasByPacienteId(pacienteId);
+    }
 }

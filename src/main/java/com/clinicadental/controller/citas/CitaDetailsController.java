@@ -1,6 +1,8 @@
 package com.clinicadental.controller.citas;
 
 import com.clinicadental.model.Entity.Cita;
+import com.clinicadental.model.Entity.Doctor;
+import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.ICitasService;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.IPacienteService;
@@ -100,15 +102,12 @@ public class CitaDetailsController {
                 System.out.println("CitaDetails cerrado.");
             }
 
-            // Crear el formulario de edición
-            List<String> nombresPacientes = pacienteService.obtenerTodos().stream()
-                    .map(paciente -> paciente.getNombre() + " " + paciente.getApellidos())
-                    .collect(Collectors.toList());
-            List<String> nombresDoctores = doctorService.getAllDoctor().stream()
-                    .map(doctor -> doctor.getNombre() + " " + doctor.getApellidos())
-                    .collect(Collectors.toList());
+            // Obtener listas de pacientes y doctores
+            List<Paciente> pacientes = pacienteService.obtenerTodos();
+            List<Doctor> doctores = doctorService.getAllDoctor();
 
-            CitaEditar citaEditarForm = new CitaEditar(nombresPacientes, nombresDoctores);
+            // Crear el formulario de edición con las listas obtenidas
+            CitaEditar citaEditarForm = new CitaEditar(pacientes, doctores);
             new CitaEditarController(cita, citaEditarForm, citaTable);
 
             // Mostrar el formulario de edición
@@ -118,6 +117,7 @@ public class CitaDetailsController {
             e.printStackTrace();
         }
     }
+
 
 
 

@@ -75,4 +75,40 @@ public class CitaDao {
         }
     }
 
+    public void deleteCitasByDoctorId(int doctorId) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            // Eliminar todas las citas asociadas al doctor
+            session.createQuery("DELETE FROM Cita WHERE doctor.idDoctor = :doctorId")
+                    .setParameter("doctorId", doctorId)
+                    .executeUpdate();
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteCitasByPacienteId(int pacienteId) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            // Eliminar todas las citas asociadas al paciente
+            session.createQuery("DELETE FROM Cita WHERE paciente.idPaciente = :pacienteId")
+                    .setParameter("pacienteId", pacienteId)
+                    .executeUpdate();
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

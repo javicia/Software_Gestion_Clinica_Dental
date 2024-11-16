@@ -18,6 +18,7 @@ public class CitaDetails extends JDialog {
     private JButton buttonOK;
     private JButton editButton;
     private JButton deleteButton;
+    private JTextField globalFilterField;
 
     public CitaDetails(JFrame parent, Date fecha, Date hora, String paciente, String doctor, String motivo) {
         super(parent, "Detalles de la Cita", true);
@@ -72,7 +73,7 @@ public class CitaDetails extends JDialog {
         // Acción para cerrar la ventana al presionar "Cerrar"
         buttonOK.addActionListener(e -> dispose());
         editButton.addActionListener(e -> {
-            dispose(); // Cierra el diálogo
+            dispose();
         });
 
     }

@@ -52,25 +52,24 @@ public class CitaEditarController {
         }
 
         if (cita.getPaciente() != null) {
-            String nombreCompletoPaciente = cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellidos();
-            citaForm.getPacienteField().setSelectedItem(nombreCompletoPaciente);
+            citaForm.getPacienteField().setSelectedItem(cita.getPaciente());
         }
 
         if (cita.getDoctor() != null) {
-            String nombreCompletoDoctor = cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellidos();
-            citaForm.getDoctorField().setSelectedItem(nombreCompletoDoctor);
+            citaForm.getDoctorField().setSelectedItem(cita.getDoctor());
         }
 
         citaForm.getMotivoField().setText(cita.getMotivo() != null ? cita.getMotivo() : "");
     }
+
 
     private class EditarCitaListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String fechaTexto = citaForm.getFechaField().getText();
             String horaTexto = citaForm.getHoraField().getText();
-            String pacienteTexto = (String) citaForm.getPacienteField().getSelectedItem();
-            String doctorTexto = (String) citaForm.getDoctorField().getSelectedItem();
+            Paciente pacienteSeleccionado = (Paciente) citaForm.getPacienteField().getSelectedItem();
+            Doctor doctorSeleccionado = (Doctor) citaForm.getDoctorField().getSelectedItem();
             String motivo = citaForm.getMotivoField().getText();
 
             resetFieldStyles();
@@ -89,14 +88,12 @@ public class CitaEditarController {
                 isValid = false;
             }
 
-            Paciente pacienteSeleccionado = ValidatorUtil.validarPaciente(pacienteTexto, pacienteService);
             if (pacienteSeleccionado == null) {
                 marcarCampoInvalido(citaForm.getPacienteField(), citaForm.getPacienteAsterisk());
                 isValid = false;
                 JOptionPane.showMessageDialog(citaForm, "Paciente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-            Doctor doctorSeleccionado = ValidatorUtil.validarDoctor(doctorTexto, doctorService);
             if (doctorSeleccionado == null) {
                 marcarCampoInvalido(citaForm.getDoctorField(), citaForm.getDoctorAsterisk());
                 isValid = false;
@@ -121,6 +118,7 @@ public class CitaEditarController {
             citaTable.setCitasData(citaService.getAllCitas());
         }
     }
+
 
     private void marcarCampoInvalido(JComponent field, JLabel asterisk) {
         field.setBorder(new LineBorder(Color.RED, 2));

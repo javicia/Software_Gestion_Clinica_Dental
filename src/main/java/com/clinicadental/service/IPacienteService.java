@@ -11,6 +11,5 @@ public interface IPacienteService {
      void updatePaciente(Paciente paciente);
      void deletePaciente(Paciente paciente);
      List<Paciente> obtenerTodos();
-     Paciente findByName(String name);
      List<Paciente> findListPacienteByName(String name);
 }

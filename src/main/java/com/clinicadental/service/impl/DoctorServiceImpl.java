@@ -1,5 +1,6 @@
 package com.clinicadental.service.impl;
 
+import com.clinicadental.model.Dao.CitaDao;
 import com.clinicadental.model.Dao.DoctorDao;
 import com.clinicadental.model.Dao.PacienteDao;
 import com.clinicadental.model.Entity.Doctor;
@@ -11,6 +12,7 @@ import java.util.List;
 public class DoctorServiceImpl implements IDoctorService {
 
     private DoctorDao doctorDao = new DoctorDao();
+    private CitaDao citaDao = new CitaDao();
     @Override
     public void saveDoctor(Doctor doctor) {
         doctorDao.saveDoctor(doctor);
@@ -23,12 +25,15 @@ public class DoctorServiceImpl implements IDoctorService {
 
     @Override
     public void deleteDoctor(Doctor doctor) {
-        doctorDao.deleteDoctor(doctor);
-    }
+        try {
+            // Eliminar todas las citas asociadas al doctor
+            citaDao.deleteCitasByDoctorId(doctor.getIdDoctor());
 
-    @Override
-    public Doctor findByName(String name) {
-        return doctorDao.findByName(name);
+            // Luego eliminar al doctor
+            doctorDao.deleteDoctor(doctor);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar el doctor: " + e.getMessage(), e);
+        }
     }
 
     @Override

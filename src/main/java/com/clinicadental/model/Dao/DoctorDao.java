@@ -64,9 +64,6 @@ public class DoctorDao {
         }
     }
 
-
-
-
     public List<Doctor> getAllDoctor() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from Doctor", Doctor.class).list();

@@ -214,11 +214,11 @@ public class GestionDoctor extends JFrame {
 
 
 
-    // Método para llenar la tabla con la lista de doctores
     public void setDoctoresData(List<Doctor> doctores) {
-        tableModel.setRowCount(0);  // Limpiar los datos actuales de la tabla
+        DefaultTableModel model = (DefaultTableModel) doctorTable.getModel();
+        model.setRowCount(0); // Elimina todas las filas existentes
         for (Doctor doctor : doctores) {
-            Object[] row = {
+            model.addRow(new Object[]{
                     doctor.getNombre(),
                     doctor.getApellidos(),
                     doctor.getDni(),
@@ -227,10 +227,10 @@ public class GestionDoctor extends JFrame {
                     doctor.getCodPostal(),
                     doctor.getEmail(),
                     doctor.getNumColegiado()
-            };
-            tableModel.addRow(row);
+            });
         }
     }
+
 
     // Método para obtener los campos de filtro
     public JTextField[] getFilterFields() {

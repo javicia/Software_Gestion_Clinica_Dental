@@ -1,5 +1,7 @@
 package com.clinicadental.view.paciente;
 
+import com.clinicadental.common.Constans;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -30,6 +32,7 @@ public class PacienteEditar extends JFrame {
 
         JPanel formPanel = new JPanel(new GridLayout(8, 3, 10, 10));  // Ajuste a 8 filas para incluir "NumColegiado"
         formPanel.setBorder(BorderFactory.createTitledBorder("Editar Paciente"));
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Añadir etiquetas y campos de texto
         formPanel.add(new JLabel("Nombre:"));

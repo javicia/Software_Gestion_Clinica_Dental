@@ -10,4 +10,6 @@ public interface ICitasService {
     void deleteCita(Cita cita);
     List<Cita> getAllCitas();
     Cita getCitaById(int id);
+    void deleteCitasByDoctorId(int doctorId);
+    void deleteCitasByPacienteId(int pacienteId);
 }
