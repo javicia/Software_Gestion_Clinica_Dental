@@ -3,6 +3,7 @@ package com.clinicadental.view.citas;
 import com.clinicadental.common.Constans;
 import com.clinicadental.common.design.GradientDesign;
 import com.clinicadental.common.design.ButtonDesign;
+import com.clinicadental.common.design.JTextFieldSearchDesign;
 import com.clinicadental.controller.citas.CitaAgregarController;
 import com.clinicadental.model.Entity.Cita;
 import com.clinicadental.model.Entity.Doctor;
@@ -24,7 +25,8 @@ import java.util.stream.Collectors;
 public class GestionCita extends JFrame {
     private JTable citaTable;
     private DefaultTableModel tableModel;
-    private JTextField[] filterFields;
+    private JTextField globalFilterField;
+    private JPanel filterPanel;
     private JButton addButton;
     private JButton backButton;
     private ICitasService citasService;
@@ -82,14 +84,9 @@ public class GestionCita extends JFrame {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
 
-        // Configuración del panel de filtros con transparencia
-        filterFields = new JTextField[5];
-        JPanel filterPanel = new JPanel(new GridLayout(1, 5));
-        filterPanel.setOpaque(false);
-        for (int i = 0; i < filterFields.length; i++) {
-            filterFields[i] = new JTextField();
-            filterPanel.add(filterFields[i]);
-        }
+        // Crear el campo de filtro global
+        filterPanel = JTextFieldSearchDesign.createSearchField();
+        globalFilterField = (JTextField) filterPanel.getComponent(0);
 
         // Configuración de los botones
         addButton = new ButtonDesign("Añadir Cita");
@@ -103,13 +100,18 @@ public class GestionCita extends JFrame {
         buttonPanel.add(addButton);
         buttonPanel.add(backButton);
 
-        // Añadir filtros y scrollPane al panel de la tabla
-        tablePanel.add(filterPanel, BorderLayout.NORTH);
+        // Crear un panel inferior para filtro y botones
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(filterPanel, BorderLayout.CENTER);
+        bottomPanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Añadir scrollPane y panel inferior al panel de la tabla
         tablePanel.add(scrollPane, BorderLayout.CENTER);
+        tablePanel.add(bottomPanel, BorderLayout.SOUTH);
 
         // Añadir los componentes al panel principal
         mainPanel.add(tablePanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
         setTitle("Gestión de Citas");
@@ -118,28 +120,21 @@ public class GestionCita extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public JTable getCitaTable() {
-        return citaTable;
-    }
-
-    public JTextField[] getFilterFields() {
-        return filterFields;
-    }
-
     public void actualizarTabla() {
-        List<Cita> citas = citasService.getAllCitas();
-        setCitasData(citas);
+        ICitasService citasService = new CitasServiceImpl(); // Instancia válida del servicio
+        List<Cita> citas = citasService.getAllCitas(); // Obtener todas las citas
+        setCitasData(citas); // Refrescar la tabla
     }
 
     public void setCitasData(List<Cita> citas) {
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(0); // Limpiar las filas existentes en la tabla
         for (Cita cita : citas) {
             tableModel.addRow(new Object[]{
                     cita.getId_cita(),
                     cita.getFecha().toString(),
                     cita.getHora().toString(),
-                    cita.getPaciente().getNombre(),
-                    cita.getDoctor().getNombre(),
+                    cita.getPaciente().getApellidos() + ", " + cita.getPaciente().getNombre(),
+                    cita.getDoctor().getApellidos() + ", " + cita.getDoctor().getNombre(),
                     cita.getMotivo()
             });
         }
@@ -154,9 +149,23 @@ public class GestionCita extends JFrame {
                 .sorted((d1, d2) -> d1.getNombre().compareToIgnoreCase(d2.getNombre()))
                 .collect(Collectors.toList());
 
+        if (pacientes.isEmpty() || doctores.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay pacientes o doctores disponibles.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         CitaAgregar citaForm = new CitaAgregar(pacientes, doctores);
         new CitaAgregarController(citaForm, this);
 
         citaForm.setVisible(true);
     }
+
+    public JTable getCitaTable() {
+        return citaTable;
+    }
+
+    public JTextField getGlobalFilterField() {
+        return globalFilterField;
+    }
 }
+

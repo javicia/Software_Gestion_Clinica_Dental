@@ -1,6 +1,7 @@
 package com.clinicadental.controller.doctor;
 
 import com.clinicadental.model.Entity.Doctor;
+import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.view.doctor.GestionDoctor;
@@ -9,13 +10,12 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GestionDoctorController {
-    private IDoctorService doctorService;
-    private GestionDoctor doctorTableView;
-    private DefaultTableModel tableModel;
-    private TableRowSorter<DefaultTableModel> sorter;
+    private final IDoctorService doctorService;
+    private final GestionDoctor doctorTableView;
+    private final DefaultTableModel tableModel;
+    private final TableRowSorter<DefaultTableModel> sorter;
 
     public GestionDoctorController(GestionDoctor doctorTableView) {
         this.doctorTableView = doctorTableView;
@@ -26,11 +26,12 @@ public class GestionDoctorController {
         this.sorter = new TableRowSorter<>(tableModel);
         this.doctorTableView.getDoctorTable().setRowSorter(sorter);
 
-        // Cargar los pacientes en la tabla
+        // Cargar doctores en la tabla
         cargarDoctoresEnTabla();
 
-        // Agregar lógica de filtrado
-        agregarFiltros();
+        // Configurar filtro en tiempo real
+        configurarFiltroEnTiempoReal();
+
     }
 
     private void cargarDoctoresEnTabla() {
@@ -38,10 +39,10 @@ public class GestionDoctorController {
         setDoctoresData(doctores);
     }
 
-    private void setDoctoresData(List<Doctor> doctores) {
-        tableModel.setRowCount(0);  // Limpiar la tabla antes de añadir nuevas filas
+        private void setDoctoresData(List< Doctor > doctores) {
+        tableModel.setRowCount(0); // Limpiar la tabla antes de actualizar
         for (Doctor doctor : doctores) {
-            Object[] row = {
+            tableModel.addRow(new Object[]{
                     doctor.getNombre(),
                     doctor.getApellidos(),
                     doctor.getDni(),
@@ -50,38 +51,28 @@ public class GestionDoctorController {
                     doctor.getCodPostal(),
                     doctor.getEmail(),
                     doctor.getNumColegiado()
-            };
-            tableModel.addRow(row);
-        }
-    }
-
-    // Método para agregar los filtros a la tabla
-    private void agregarFiltros() {
-        JTextField[] filterFields = doctorTableView.getFilterFields();  // Obtener los campos de filtro
-
-        for (int i = 0; i < filterFields.length; i++) {
-            final int colIndex = i;
-            filterFields[i].addKeyListener(new java.awt.event.KeyAdapter() {
-                @Override
-                public void keyReleased(java.awt.event.KeyEvent e) {
-                    aplicarFiltros();  // Llamar al método de aplicar filtros cuando se escribe en un campo
-                }
             });
         }
     }
 
-    // Método para aplicar los filtros a la tabla
-    private void aplicarFiltros() {
-        List<RowFilter<Object, Object>> filters = java.util.stream.IntStream.range(0, doctorTableView.getFilterFields().length)
-                .mapToObj(i -> {
-                    String filterText = doctorTableView.getFilterFields()[i].getText();
-                    return filterText.isEmpty() ? null : RowFilter.regexFilter("(?i)" + filterText, i);
-                })
-                .filter(f -> f != null)
-                .collect(Collectors.toList());
-
-        sorter.setRowFilter(filters.isEmpty() ? null : RowFilter.andFilter(filters));
+    private void configurarFiltroEnTiempoReal() {
+        JTextField filterField = doctorTableView.getGlobalFilterField();  // Obtener el campo de filtro global
+        filterField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                aplicarFiltro(filterField.getText());
+            }
+        });
     }
+
+
+    private void aplicarFiltro(String textoFiltro) {
+        if (textoFiltro.isEmpty()) {
+            sorter.setRowFilter(null); // Muestra todas las filas si no hay filtro
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + textoFiltro)); // Aplica el filtro ignorando mayúsculas/minúsculas
+        }
+    }
+
+
 }
-
-

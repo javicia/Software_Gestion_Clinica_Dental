@@ -88,18 +88,6 @@ public class PacienteDetails extends JFrame {
         return label;
     }
 
-    // Crear un botón estilizado para las acciones
-    private JButton createActionButton(String text, Color color) {
-        JButton button = new JButton(text);
-        button.setFocusPainted(false);
-        button.setForeground(Color.WHITE);
-        button.setBackground(color);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setPreferredSize(new Dimension(100, 35));
-        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return button;
-    }
 
     // Métodos para agregar listeners a los botones
     public void addEditListener(ActionListener listener) {

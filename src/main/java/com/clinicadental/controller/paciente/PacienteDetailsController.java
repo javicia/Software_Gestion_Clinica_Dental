@@ -1,20 +1,19 @@
 package com.clinicadental.controller.paciente;
 
 import com.clinicadental.model.Entity.Paciente;
-import com.clinicadental.service.ICitasService;
 import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.PacienteServiceImpl;
-import com.clinicadental.view.paciente.PacienteDetails;
 import com.clinicadental.view.paciente.GestionPaciente;
+import com.clinicadental.view.paciente.PacienteDetails;
+import com.clinicadental.view.paciente.PacienteEditar;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class PacienteDetailsController {
-    private IPacienteService pacienteService;
-    private ICitasService citaService;
-    private GestionPaciente pacienteTable;
+    private final IPacienteService pacienteService;
+    private final GestionPaciente pacienteTable;
 
     public PacienteDetailsController(GestionPaciente pacienteTableView) {
         this.pacienteTable = pacienteTableView;
@@ -33,7 +32,6 @@ public class PacienteDetailsController {
         });
     }
 
-    // Método para mostrar los detalles del paciente seleccionado
     private void mostrarDetallesPaciente(int selectedRow) {
         Paciente paciente = obtenerPacienteDesdeTabla(selectedRow);
         if (paciente != null) {
@@ -48,60 +46,58 @@ public class PacienteDetailsController {
                     paciente.getEmail()
             );
 
-            // Listener para el botón "Eliminar"
-            detailsDialog.addDeleteListener(new ActionListener() {
+            // Listener para el botón "Editar"
+            detailsDialog.addEditListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Botón 'Eliminar' fue presionado en el diálogo");
-                    mostrarConfirmDialog(paciente, detailsDialog);
+                    abrirFormularioEdicion(paciente, detailsDialog);
                 }
             });
 
+            // Listener para el botón "Eliminar"
+            detailsDialog.addDeleteListener(e -> mostrarConfirmDialog(paciente, detailsDialog));
+
             detailsDialog.setVisible(true);
         } else {
-            System.out.println("No se pudo obtener el paciente.");
+            JOptionPane.showMessageDialog(pacienteTable, "No se pudo obtener los detalles del paciente.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Mostrar el cuadro de diálogo de confirmación
-    private void mostrarConfirmDialog(Paciente paciente, PacienteDetails detailsDialog) {
-        System.out.println("Intentando mostrar el JOptionPane de confirmación");
+    private void abrirFormularioEdicion(Paciente paciente, PacienteDetails detailsDialog) {
+        // Cerrar la ventana de detalles
+        detailsDialog.cerrarDialogo();
 
-        // Mostrar el cuadro de diálogo de confirmación
+        // Crear y abrir el formulario de edición
+        PacienteEditar editarPacienteForm = new PacienteEditar();
+        editarPacienteForm.getNombreField().setText(paciente.getNombre());
+        editarPacienteForm.getApellidosField().setText(paciente.getApellidos());
+        editarPacienteForm.getDniField().setText(paciente.getDni());
+        editarPacienteForm.getTelefonoField().setText(paciente.getTelefono());
+        editarPacienteForm.getDireccionField().setText(paciente.getDireccion());
+        editarPacienteForm.getCodPostalField().setText(String.valueOf(paciente.getCodPostal()));
+        editarPacienteForm.getEmailField().setText(paciente.getEmail());
+
+        new PacienteEditarController(paciente, editarPacienteForm, pacienteTable);
+        editarPacienteForm.setVisible(true);
+    }
+
+    private void mostrarConfirmDialog(Paciente paciente, PacienteDetails detailsDialog) {
         int confirm = JOptionPane.showConfirmDialog(
-                detailsDialog, // Cambié null a detailsDialog para asegurar que sea modal respecto al diálogo de detalles
+                detailsDialog,
                 "¿Está seguro de que desea eliminar este paciente?",
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION
         );
 
-        // Verificar qué opción eligió el usuario
-        System.out.println("Respuesta del JOptionPane: " + confirm);
-
-        // Si el usuario confirma (opción "Sí")
         if (confirm == JOptionPane.YES_OPTION) {
             eliminarPaciente(paciente, detailsDialog);
-        } else {
-            System.out.println("Eliminación cancelada por el usuario.");
         }
     }
 
-    // Método para eliminar el paciente de la base de datos y actualizar la tabla
     private void eliminarPaciente(Paciente paciente, PacienteDetails detailsDialog) {
-        System.out.println("Eliminando paciente: " + paciente.getDni());
-
-        // Eliminar citas asociadas al doctor
-        citaService.deleteCitasByPacienteId(paciente.getId_paciente());
-        // Eliminar paciente de la base de datos
         pacienteService.deletePaciente(paciente);
-
-        // Actualizar la tabla con los pacientes restantes
-        pacienteTable.setPacientesData(pacienteService.obtenerTodos());
-
-        // Mostrar mensaje de confirmación
+        pacienteTable.actualizarTabla();
         JOptionPane.showMessageDialog(null, "Paciente eliminado exitosamente.");
-
-        // Cerrar el diálogo de detalles
         detailsDialog.cerrarDialogo();
     }
 

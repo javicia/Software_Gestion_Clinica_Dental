@@ -1,5 +1,7 @@
 package com.clinicadental.view.paciente;
 
+import com.clinicadental.common.Constans;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -31,6 +33,9 @@ public class PacienteAgregar extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
+
+        // Establecer el icono de la aplicación
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Formato de campos de texto
         Font smallFont = new Font("Arial", Font.PLAIN, 12);

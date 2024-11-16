@@ -1,5 +1,7 @@
 package com.clinicadental.view.doctor;
 
+import com.clinicadental.common.Constans;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -28,6 +30,9 @@ public class DoctorAgregar extends JFrame {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Establecer el icono de la aplicación
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         JPanel formPanel = new JPanel(new GridLayout(8, 3, 10, 10));  // Ajuste a 8 filas para incluir "NumColegiado"
         formPanel.setBorder(BorderFactory.createTitledBorder("Registrar Doctor"));

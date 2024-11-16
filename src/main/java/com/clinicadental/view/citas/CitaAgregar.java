@@ -1,5 +1,6 @@
 package com.clinicadental.view.citas;
 
+import com.clinicadental.common.Constans;
 import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.utils.CalendarUtils;
@@ -33,6 +34,9 @@ public class CitaAgregar extends JFrame {
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Establecer el icono de la aplicación
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
+
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createTitledBorder("Registrar Cita"));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -40,6 +44,8 @@ public class CitaAgregar extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         Font smallFont = new Font("Arial", Font.PLAIN, 12);
+
+
 
         // Configuración de fecha
         gbc.gridx = 0;
@@ -51,7 +57,7 @@ public class CitaAgregar extends JFrame {
         JPanel fechaPanel = new JPanel(new BorderLayout());
         fechaPanel.add(fechaField, BorderLayout.CENTER);
 
-        ImageIcon calendarIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/calendar.png")));
+        ImageIcon calendarIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/icon_calendar.png")));
         Image scaledImage = calendarIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         calendarIcon = new ImageIcon(scaledImage);
 
@@ -93,7 +99,7 @@ public class CitaAgregar extends JFrame {
         JPanel horaPanel = new JPanel(new BorderLayout());
         horaPanel.add(horaField, BorderLayout.CENTER);
 
-        ImageIcon clockIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/our.png")));
+        ImageIcon clockIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/icon_our.png")));
         Image scaledClockImage = clockIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         clockIcon = new ImageIcon(scaledClockImage);
 

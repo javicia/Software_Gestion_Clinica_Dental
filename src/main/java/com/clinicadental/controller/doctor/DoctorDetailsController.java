@@ -1,11 +1,16 @@
 package com.clinicadental.controller.doctor;
 
+import com.clinicadental.controller.paciente.PacienteEditarController;
 import com.clinicadental.model.Entity.Doctor;
+import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.ICitasService;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.impl.DoctorServiceImpl;
 import com.clinicadental.view.doctor.DoctorDetails;
+import com.clinicadental.view.doctor.DoctorEditar;
 import com.clinicadental.view.doctor.GestionDoctor;
+import com.clinicadental.view.paciente.PacienteDetails;
+import com.clinicadental.view.paciente.PacienteEditar;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -49,6 +54,13 @@ public class DoctorDetailsController {
                     doctor.getEmail(),
                     doctor.getNumColegiado()
             );
+            // Listener para el botón "Editar"
+            detailsDialog.addEditListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    abrirFormularioEdicion(doctor, detailsDialog);
+                }
+            });
 
             // Listener para el botón "Eliminar"
             detailsDialog.addDeleteListener(new ActionListener() {
@@ -63,6 +75,24 @@ public class DoctorDetailsController {
         } else {
             System.out.println("No se pudo obtener el paciente.");
         }
+    }
+
+    private void abrirFormularioEdicion(Doctor doctor, DoctorDetails detailsDialog) {
+        // Cerrar la ventana de detalles
+        detailsDialog.cerrarDialogo();
+
+        // Crear y abrir el formulario de edición
+        DoctorEditar editarDoctorForm = new DoctorEditar();
+        editarDoctorForm.getNombreField().setText(doctor.getNombre());
+        editarDoctorForm.getApellidosField().setText(doctor.getApellidos());
+        editarDoctorForm.getDniField().setText(doctor.getDni());
+        editarDoctorForm.getTelefonoField().setText(doctor.getTelefono());
+        editarDoctorForm.getDireccionField().setText(doctor.getDireccion());
+        editarDoctorForm.getCodPostalField().setText(String.valueOf(doctor.getCodPostal()));
+        editarDoctorForm.getEmailField().setText(doctor.getEmail());
+
+        new DoctorEditarController(doctor, editarDoctorForm, doctorTable);
+        editarDoctorForm.setVisible(true);
     }
 
     // Método para mostrar el cuadro de diálogo de confirmación
