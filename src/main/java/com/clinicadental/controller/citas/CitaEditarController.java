@@ -22,12 +22,12 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 
 public class CitaEditarController {
-    private ICitasService citaService;
-    private IDoctorService doctorService;
-    private IPacienteService pacienteService;
-    private CitaEditar citaForm;
-    private GestionCita citaTable;
-    private Cita cita;
+    private final ICitasService citaService;
+    private final IDoctorService doctorService;
+    private final IPacienteService pacienteService;
+    private final CitaEditar citaForm;
+    private final GestionCita citaTable;
+    private final Cita cita;
 
     public CitaEditarController(Cita cita, CitaEditar citaForm, GestionCita citaTable) {
         this.cita = cita;
@@ -39,28 +39,32 @@ public class CitaEditarController {
 
         inicializarFormulario();
         this.citaForm.addGuardarButtonListener(new EditarCitaListener());
-        this.citaForm.addLimpiarButtonListener(new LimpiarCamposListener());
-        this.citaForm.addRetrocederButtonListener(new RetrocederListener());
+        this.citaForm.addLimpiarButtonListener(e -> citaForm.limpiarCampos());
+        this.citaForm.addRetrocederButtonListener(e -> citaForm.dispose());
     }
 
     private void inicializarFormulario() {
-        citaForm.getFechaField().setText(DateUtils.formatFecha(cita.getFecha()));
-        citaForm.getHoraField().setText(DateUtils.formatHora(cita.getHora()));
+        if (cita.getFecha() != null) {
+            citaForm.getFechaField().setText(DateUtils.formatFecha(cita.getFecha()));
+        }
+        if (cita.getHora() != null) {
+            citaForm.getHoraField().setText(DateUtils.formatHora(cita.getHora()));
+        }
 
-        // Selecciona el paciente en el JComboBox
-        String nombreCompletoPaciente = cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellidos();
-        citaForm.getPacienteField().setSelectedItem(nombreCompletoPaciente);
+        if (cita.getPaciente() != null) {
+            String nombreCompletoPaciente = cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellidos();
+            citaForm.getPacienteField().setSelectedItem(nombreCompletoPaciente);
+        }
 
-        // Selecciona el doctor en el JComboBox
-        String nombreCompletoDoctor = cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellidos();
-        citaForm.getDoctorField().setSelectedItem(nombreCompletoDoctor);
+        if (cita.getDoctor() != null) {
+            String nombreCompletoDoctor = cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellidos();
+            citaForm.getDoctorField().setSelectedItem(nombreCompletoDoctor);
+        }
 
-        // Inicializar el campo de motivo
-        citaForm.getMotivoField().setText(cita.getMotivo());
+        citaForm.getMotivoField().setText(cita.getMotivo() != null ? cita.getMotivo() : "");
     }
 
-    // Listener para el botón Guardar
-    class EditarCitaListener implements ActionListener {
+    private class EditarCitaListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String fechaTexto = citaForm.getFechaField().getText();
@@ -89,18 +93,18 @@ public class CitaEditarController {
             if (pacienteSeleccionado == null) {
                 marcarCampoInvalido(citaForm.getPacienteField(), citaForm.getPacienteAsterisk());
                 isValid = false;
-                JOptionPane.showMessageDialog(citaForm, "Paciente no encontrado o existen múltiples pacientes con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(citaForm, "Paciente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             Doctor doctorSeleccionado = ValidatorUtil.validarDoctor(doctorTexto, doctorService);
             if (doctorSeleccionado == null) {
                 marcarCampoInvalido(citaForm.getDoctorField(), citaForm.getDoctorAsterisk());
                 isValid = false;
-                JOptionPane.showMessageDialog(citaForm, "Doctor no encontrado o existen múltiples doctores con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(citaForm, "Doctor no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             if (!isValid) {
-                JOptionPane.showMessageDialog(citaForm, "Por favor, corrige los campos marcados en rojo.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(citaForm, "Corrige los campos marcados.", "Error de validación", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -113,9 +117,8 @@ public class CitaEditarController {
             citaService.updateCita(cita);
 
             JOptionPane.showMessageDialog(citaForm, "Cita editada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            citaForm.limpiarCampos();
-            citaTable.setCitasData(citaService.getAllCitas());
             citaForm.dispose();
+            citaTable.setCitasData(citaService.getAllCitas());
         }
     }
 
@@ -134,23 +137,9 @@ public class CitaEditarController {
     }
 
     private void resetFieldStyle(JComponent field, JLabel asterisk) {
-        field.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
+        field.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
         if (asterisk != null) {
             asterisk.setForeground(Color.BLACK);
-        }
-    }
-
-    class LimpiarCamposListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            citaForm.limpiarCampos();
-        }
-    }
-
-    class RetrocederListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            citaForm.dispose();
         }
     }
 }

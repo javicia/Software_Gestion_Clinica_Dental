@@ -5,6 +5,8 @@ import com.clinicadental.service.ICitasService;
 import com.clinicadental.service.IDoctorService;
 import com.clinicadental.service.IPacienteService;
 import com.clinicadental.service.impl.CitasServiceImpl;
+import com.clinicadental.service.impl.DoctorServiceImpl;
+import com.clinicadental.service.impl.PacienteServiceImpl;
 import com.clinicadental.view.citas.CitaDetails;
 import com.clinicadental.view.citas.CitaEditar;
 import com.clinicadental.view.citas.GestionCita;
@@ -22,8 +24,10 @@ public class CitaDetailsController {
     public CitaDetailsController(GestionCita citaTableView) {
         this.citaTable = citaTableView;
         this.citaService = new CitasServiceImpl();
+        this.pacienteService = new PacienteServiceImpl(); // Asegúrate de inicializar
+        this.doctorService = new DoctorServiceImpl();    // Asegúrate de inicializar
 
-        // Listener para detectar doble clic en la tabla y mostrar los detalles
+        // Listener para doble clic en la tabla
         this.citaTable.getCitaTable().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -43,7 +47,7 @@ public class CitaDetailsController {
             String nombreCompletoPaciente = cita.getPaciente().toString();
             String nombreCompletoDoctor = cita.getDoctor().toString();
 
-            // Almacena los nombres completos en variables del diálogo
+            // Crear el diálogo de detalles
             CitaDetails detailsDialog = new CitaDetails(
                     citaTable,
                     cita.getFecha(),
@@ -53,15 +57,16 @@ public class CitaDetailsController {
                     cita.getMotivo()
             );
 
-            // Define acciones de los botones sin alterar los nombres completos
+            // Define acciones de los botones
             detailsDialog.addDeleteListener(e -> mostrarConfirmDialog(cita, detailsDialog));
             detailsDialog.addEditListener(e -> editarCita(cita, detailsDialog));
 
+            // Mostrar el diálogo
             detailsDialog.setVisible(true);
-        } else {
-            System.out.println("No se pudo obtener los detalles de la cita.");
         }
     }
+
+
 
     private void mostrarConfirmDialog(Cita cita, CitaDetails detailsDialog) {
         int confirm = JOptionPane.showConfirmDialog(
@@ -84,21 +89,37 @@ public class CitaDetailsController {
     }
 
     private void editarCita(Cita cita, CitaDetails detailsDialog) {
-        detailsDialog.dispose(); // Cierra el diálogo de detalles antes de abrir edición
+        try {
+            System.out.println("Iniciando edición de cita...");
 
-        // Obtener listas de nombres de pacientes y doctores
-        List<String> nombresPacientes = pacienteService.obtenerTodos().stream()
-                .map(paciente -> paciente.getNombre() + " " + paciente.getApellidos())
-                .collect(Collectors.toList());
-        List<String> nombresDoctores = doctorService.getAllDoctor().stream()
-                .map(doctor -> doctor.getNombre() + " " + doctor.getApellidos())
-                .collect(Collectors.toList());
+            // Cerrar el diálogo actual antes de abrir el formulario de edición
+            if (detailsDialog != null) {
+                System.out.println("Cerrando CitaDetails...");
+                detailsDialog.setVisible(false); // Ocultar el diálogo
+                detailsDialog.dispose();        // Liberar recursos
+                System.out.println("CitaDetails cerrado.");
+            }
 
-        // Crear el formulario de edición con las listas de nombres
-        CitaEditar citaEditarForm = new CitaEditar(nombresPacientes, nombresDoctores);
-        new CitaEditarController(cita, citaEditarForm, citaTable);
-        citaEditarForm.setVisible(true);
+            // Crear el formulario de edición
+            List<String> nombresPacientes = pacienteService.obtenerTodos().stream()
+                    .map(paciente -> paciente.getNombre() + " " + paciente.getApellidos())
+                    .collect(Collectors.toList());
+            List<String> nombresDoctores = doctorService.getAllDoctor().stream()
+                    .map(doctor -> doctor.getNombre() + " " + doctor.getApellidos())
+                    .collect(Collectors.toList());
+
+            CitaEditar citaEditarForm = new CitaEditar(nombresPacientes, nombresDoctores);
+            new CitaEditarController(cita, citaEditarForm, citaTable);
+
+            // Mostrar el formulario de edición
+            citaEditarForm.setVisible(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+
 
     private void actualizarTablaCitas() {
         List<Cita> citasActualizadas = citaService.getAllCitas();
@@ -112,4 +133,7 @@ public class CitaDetailsController {
                 .findFirst()
                 .orElse(null);
     }
+
+
+
 }

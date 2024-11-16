@@ -1,5 +1,6 @@
 package com.clinicadental.view.citas;
 
+import com.clinicadental.common.Constans;
 import com.clinicadental.common.design.ButtonDesign;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ public class CitaDetails extends JDialog {
 
     public CitaDetails(JFrame parent, Date fecha, Date hora, String paciente, String doctor, String motivo) {
         super(parent, "Detalles de la Cita", true);
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600, 400);
@@ -69,6 +71,10 @@ public class CitaDetails extends JDialog {
 
         // Acción para cerrar la ventana al presionar "Cerrar"
         buttonOK.addActionListener(e -> dispose());
+        editButton.addActionListener(e -> {
+            dispose(); // Cierra el diálogo
+        });
+
     }
 
     // Crear un JLabel estilizado para los valores de los detalles
@@ -92,4 +98,7 @@ public class CitaDetails extends JDialog {
     public void cerrarDialogo() {
         this.dispose();
     }
+
+
+
 }

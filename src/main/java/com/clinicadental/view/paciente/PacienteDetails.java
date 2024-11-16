@@ -1,5 +1,6 @@
 package com.clinicadental.view.paciente;
 
+import com.clinicadental.common.Constans;
 import com.clinicadental.common.design.ButtonDesign;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ public class PacienteDetails extends JFrame {
 
     public PacienteDetails(JFrame parent, String nombre, String apellidos, String dni, String telefono, String direccion, String codPostal, String email) {
         super("Detalles del Paciente");
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Configurar el tamaño del JFrame para que coincida con MainScreen
         setSize(600, 400);
