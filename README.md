@@ -16,24 +16,27 @@ Este es un sistema de gestión para una clínica dental que permite administrar 
 ### Pantalla Principal
 La pantalla principal permite acceder a los módulos de gestión de pacientes, doctores y citas.
 
-![Gestión Principal](./screenshots/Gestión%20Principal.png)
+
+![Gestión Principal](https://github.com/user-attachments/assets/02f1f522-4169-47d1-9426-90c39ea68e90)
 
 ---
 
 ### Gestión de Pacientes
 En este módulo puedes visualizar la lista de pacientes registrados, buscar por nombre, añadir nuevos pacientes, editar información o eliminarlos.
 
-![Gestión de Pacientes](./screenshots/Gestión%20Pacientes.png)
+![Gestión Pacientes](https://github.com/user-attachments/assets/cd84427f-6070-4cd1-a2df-aeb6547cd949)
 
 #### Registrar Paciente
 Formulario para registrar nuevos pacientes, con campos obligatorios marcados.
 
-![Registrar Paciente](./screenshots/Registrar%20paciente.png)
+![Registrar paciente](https://github.com/user-attachments/assets/ae08b067-ad69-4711-82da-65c8251d47f5)
+
 
 #### Detalles del Paciente
 Visualización de los detalles de un paciente seleccionado, con opciones para editar o eliminar.
 
-![Detalles del Paciente](./screenshots/Detalles%20Paciente.png)
+![Detalles Paciente](https://github.com/user-attachments/assets/d2287c4d-a38e-4909-8515-a9b25882a323)
+
 
 ---
 
@@ -43,7 +46,8 @@ El módulo para gestionar doctores permite registrar, visualizar, editar y elimi
 #### Editar Doctor
 Formulario de edición para modificar los datos de un doctor existente.
 
-![Editar Doctor](./screenshots/Editar%20Doctor.png)
+![Editar Doctor](https://github.com/user-attachments/assets/ef57713a-d575-419b-98c6-1ebd89c2b68d)
+
 
 ---
 
@@ -53,7 +57,8 @@ Este módulo permite gestionar citas, incluyendo la visualización, registro y e
 #### Eliminar Cita
 Confirmación para eliminar una cita seleccionada de la lista.
 
-![Eliminar Cita](./screenshots/Eliminar%20cita.png)
+![Eliminar cita](https://github.com/user-attachments/assets/c536609e-389d-41dc-b3f4-f9ea10fbf77b)
+
 
 ---
 
@@ -79,4 +84,4 @@ Confirmación para eliminar una cita seleccionada de la lista.
 
 1. Clona este repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/clinica-dental.git
+   git clone https://github.com/javicia/clinica-dental.git
