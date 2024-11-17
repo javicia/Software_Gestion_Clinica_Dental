@@ -5,6 +5,7 @@ import com.clinicadental.common.design.GradientDesign;
 import com.clinicadental.common.design.ButtonDesign;
 import com.clinicadental.common.design.JTextFieldSearchDesign;
 import com.clinicadental.controller.citas.CitaAgregarController;
+import com.clinicadental.controller.citas.CitaDetailsController;
 import com.clinicadental.model.Entity.Cita;
 import com.clinicadental.model.Entity.Doctor;
 import com.clinicadental.model.Entity.Paciente;
@@ -39,6 +40,7 @@ public class GestionCita extends JFrame {
         doctorService = new DoctorServiceImpl();
 
         setupUI();
+        new CitaDetailsController(this);
         actualizarTabla();
     }
 
@@ -58,6 +60,8 @@ public class GestionCita extends JFrame {
                 new Font("Arial", Font.BOLD, 18),
                 Color.BLACK
         ));
+
+        setIconImage(new ImageIcon(getClass().getResource(Constans.ICON_LOGO_IMAGE_PATH)).getImage());
 
         // Configuración de la tabla de citas
         tableModel = new DefaultTableModel(new String[]{"ID", "Fecha", "Hora", "Paciente", "Doctor", "Motivo"}, 0) {
@@ -120,6 +124,26 @@ public class GestionCita extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    private void abrirCitaForm() {
+        List<Paciente> pacientes = pacienteService.obtenerTodos().stream()
+                .sorted((p1, p2) -> p1.getNombre().compareToIgnoreCase(p2.getNombre()))
+                .collect(Collectors.toList());
+
+        List<Doctor> doctores = doctorService.getAllDoctor().stream()
+                .sorted((d1, d2) -> d1.getNombre().compareToIgnoreCase(d2.getNombre()))
+                .collect(Collectors.toList());
+
+        if (pacientes.isEmpty() || doctores.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay pacientes o doctores disponibles.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        CitaAgregar citaForm = new CitaAgregar(pacientes, doctores);
+        new CitaAgregarController(citaForm, this);
+
+        citaForm.setVisible(true);
+    }
+
     public void actualizarTabla() {
         ICitasService citasService = new CitasServiceImpl(); // Instancia válida del servicio
         List<Cita> citas = citasService.getAllCitas(); // Obtener todas las citas
@@ -140,25 +164,6 @@ public class GestionCita extends JFrame {
         }
     }
 
-    private void abrirCitaForm() {
-        List<Paciente> pacientes = pacienteService.obtenerTodos().stream()
-                .sorted((p1, p2) -> p1.getNombre().compareToIgnoreCase(p2.getNombre()))
-                .collect(Collectors.toList());
-
-        List<Doctor> doctores = doctorService.getAllDoctor().stream()
-                .sorted((d1, d2) -> d1.getNombre().compareToIgnoreCase(d2.getNombre()))
-                .collect(Collectors.toList());
-
-        if (pacientes.isEmpty() || doctores.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No hay pacientes o doctores disponibles.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        CitaAgregar citaForm = new CitaAgregar(pacientes, doctores);
-        new CitaAgregarController(citaForm, this);
-
-        citaForm.setVisible(true);
-    }
 
     public JTable getCitaTable() {
         return citaTable;

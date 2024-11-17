@@ -57,7 +57,7 @@ public class CitaAgregar extends JFrame {
         JPanel fechaPanel = new JPanel(new BorderLayout());
         fechaPanel.add(fechaField, BorderLayout.CENTER);
 
-        ImageIcon calendarIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/icon_calendar.png")));
+        ImageIcon calendarIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(Constans.ICON_CALENDAR_IMAGE_PATH)));
         Image scaledImage = calendarIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         calendarIcon = new ImageIcon(scaledImage);
 
@@ -99,7 +99,7 @@ public class CitaAgregar extends JFrame {
         JPanel horaPanel = new JPanel(new BorderLayout());
         horaPanel.add(horaField, BorderLayout.CENTER);
 
-        ImageIcon clockIcon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icons/icon_our.png")));
+        ImageIcon clockIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(Constans.ICON_HOUR_IMAGE_PATH)));
         Image scaledClockImage = clockIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         clockIcon = new ImageIcon(scaledClockImage);
 

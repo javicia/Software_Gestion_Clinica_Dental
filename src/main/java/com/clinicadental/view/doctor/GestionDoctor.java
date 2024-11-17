@@ -6,13 +6,8 @@ import com.clinicadental.common.design.GradientDesign;
 import com.clinicadental.common.design.JTextFieldSearchDesign;
 import com.clinicadental.controller.doctor.DoctorAgregarController;
 import com.clinicadental.controller.doctor.DoctorDetailsController;
-import com.clinicadental.controller.paciente.PacienteAgregarController;
-import com.clinicadental.controller.paciente.PacienteDetailsController;
 import com.clinicadental.model.Entity.Doctor;
-import com.clinicadental.model.Entity.Paciente;
 import com.clinicadental.service.impl.DoctorServiceImpl;
-import com.clinicadental.service.impl.PacienteServiceImpl;
-import com.clinicadental.view.paciente.PacienteAgregar;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -85,15 +80,19 @@ public class GestionDoctor extends JFrame {
         backButton = new ButtonDesign("Volver");
         backButton.addActionListener(e -> dispose());
 
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
         buttonPanel.add(addButton);
         buttonPanel.add(backButton);
 
+        // Crear un panel inferior para filtro y botones
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.add(filterPanel, BorderLayout.CENTER);
         bottomPanel.add(buttonPanel, BorderLayout.EAST);
 
+        // Añadir scrollPane y panel inferior al panel de la tabla
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(tablePanel, BorderLayout.CENTER);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
